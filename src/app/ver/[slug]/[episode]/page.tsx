@@ -1,8 +1,13 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ChevronLeft } from 'lucide-react';
+import { cookies } from 'next/headers';
 import { getEpisodeByNumber, getAnimeDetails } from '@/services/animeApi';
 import VideoPlayer from '@/components/ui/VideoPlayer';
+import EpisodeWatcher from '@/components/ui/EpisodeWatcher';
+import { decrypt } from '@/lib/auth';
+import connectDB from '@/lib/mongoose';
+import { WatchProgress } from '@/models/WatchProgress';
 
 export const revalidate = 3600;
 
@@ -29,6 +34,32 @@ export default async function WatchPage({ params }: { params: Promise<{ slug: st
 
   const title = episodeData.title || (animeData?.title ? `${animeData.title} - Episodio ${episode}` : `Episodio ${episode}`);
 
+  // Get user session and episode status
+  let initialStatus: 'pendiente' | 'viendo' | 'visto' = 'pendiente';
+  let isAuthenticated = false;
+
+  try {
+    const cookieStore = await cookies();
+    const sessionCookie = cookieStore.get('session');
+    if (sessionCookie) {
+      const payload = await decrypt(sessionCookie.value);
+      if (payload) {
+        isAuthenticated = true;
+        await connectDB();
+        const existingProgress = await WatchProgress.findOne({
+          userId: payload.userId,
+          animeSlug: slug,
+          episodeNumber: Number(episode),
+        }).lean();
+        if (existingProgress) {
+          initialStatus = (existingProgress as any).status || 'pendiente';
+        }
+      }
+    }
+  } catch (e) {
+    // Not authenticated - silently skip
+  }
+
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white pt-24 pb-12">
       <div className="container mx-auto px-4 md:px-12">
@@ -49,9 +80,18 @@ export default async function WatchPage({ params }: { params: Promise<{ slug: st
 
         {/* Video Player */}
         <VideoPlayer servers={episodeData.servers} />
+
+        {/* Episode Status Watcher (only for authenticated users) */}
+        {isAuthenticated && (
+          <EpisodeWatcher
+            animeSlug={slug}
+            episodeNumber={Number(episode)}
+            initialStatus={initialStatus}
+          />
+        )}
         
         {/* Next/Prev Navigation */}
-        <div className="mt-12 flex justify-between items-center max-w-5xl mx-auto border-t border-zinc-800 pt-6">
+        <div className="mt-8 flex justify-between items-center max-w-5xl mx-auto border-t border-zinc-800 pt-6">
           <Link 
             href={parseInt(episode) > 1 ? `/ver/${slug}/${parseInt(episode) - 1}` : '#'}
             className={`font-semibold  ${parseInt(episode) > 1 ? 'text-gray-300 hover:text-white' : 'text-gray-700 cursor-not-allowed pointer-events-none'}`}

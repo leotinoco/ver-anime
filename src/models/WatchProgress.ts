@@ -1,11 +1,13 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
 
+export type EpisodeStatus = 'pendiente' | 'viendo' | 'visto';
+
 export interface IWatchProgress extends Document {
   userId: string;
   animeSlug: string;
   episodeNumber: number;
+  status: EpisodeStatus;
   watchedAt: Date;
-  completed: boolean;
   lastPosition?: number; // In seconds
 }
 
@@ -24,13 +26,14 @@ const WatchProgressSchema = new Schema<IWatchProgress>({
     type: Number,
     required: true,
   },
+  status: {
+    type: String,
+    enum: ['pendiente', 'viendo', 'visto'],
+    default: 'pendiente',
+  },
   watchedAt: {
     type: Date,
     default: Date.now,
-  },
-  completed: {
-    type: Boolean,
-    default: false,
   },
   lastPosition: {
     type: Number,
@@ -42,3 +45,4 @@ const WatchProgressSchema = new Schema<IWatchProgress>({
 WatchProgressSchema.index({ userId: 1, animeSlug: 1, episodeNumber: 1 }, { unique: true });
 
 export const WatchProgress: Model<IWatchProgress> = mongoose.models.WatchProgress || mongoose.model<IWatchProgress>('WatchProgress', WatchProgressSchema);
+

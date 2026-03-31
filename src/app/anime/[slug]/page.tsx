@@ -1,9 +1,9 @@
-import Image from 'next/image';
 import Link from 'next/link';
-import { Play, ChevronLeft, Calendar, Tag, Star } from 'lucide-react';
+import { ChevronLeft, Star, Play } from 'lucide-react';
 import { getAnimeDetails } from '@/services/animeApi';
 import { notFound } from 'next/navigation';
 import AddToListButton from '@/components/ui/AddToListButton';
+import EpisodeList from '@/components/ui/EpisodeList';
 
 export const revalidate = 3600; // 1 hr cache
 
@@ -122,28 +122,11 @@ export default async function AnimeDetailsPage({ params }: { params: Promise<{ s
               <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
                 Episodios ({anime.episodes?.length || 0})
               </h3>
-              
-              <div className="grid gap-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
-                {anime.episodes?.map((ep: any) => (
-                  <Link 
-                    key={ep.number} 
-                    href={`/ver/${resolvedParams.slug}/${ep.number}`}
-                    className="flex flex-col sm:flex-row gap-4 p-4 rounded-lg bg-zinc-900/50 hover:bg-zinc-800 transition-colors border border-zinc-800/50 group"
-                  >
-                    <div className="relative w-full sm:w-48 aspect-video bg-zinc-800 rounded overflow-hidden shrink-0 flex items-center justify-center">
-                      <Play className="w-8 h-8 text-white opacity-50 group-hover:opacity-100 transition-opacity" />
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-bold text-lg mb-1 group-hover:text-white text-gray-200 transition-colors">
-                        Episodio {ep.number}
-                      </h4>
-                      <p className="text-sm text-gray-400 line-clamp-2">
-                        Haz clic para ver el episodio {ep.number} de {anime.title}.
-                      </p>
-                    </div>
-                  </Link>
-                ))}
-              </div>
+              <EpisodeList
+                episodes={anime.episodes || []}
+                animeSlug={resolvedParams.slug}
+                animeTitle={anime.title}
+              />
             </div>
           </div>
 

@@ -26,6 +26,7 @@ export default function Footer() {
           <div className="flex flex-col gap-2">
             <h4 className="text-white font-bold mb-1">Soporte</h4>
             <Link href="/changelog" className="hover:text-white transition-colors">Changelog</Link>
+            <a href="https://github.com/leotinoco/ver-anime" target="_blank" rel="noreferrer noopener" className="hover:text-white transition-colors">Repositorio GitHub</a>
             <a href="https://github.com/leotinoco" className="hover:text-white transition-colors">Contacto</a>
           </div>
         </div>

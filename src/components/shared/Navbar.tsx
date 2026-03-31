@@ -69,7 +69,8 @@ export default function Navbar() {
         { name: 'Top MyAnimeList', href: '/mejor-calificados-myanimelist' }
       ]
     },
-    { name: 'Mi Lista', href: '/favoritos' },
+    // Only show Mi Lista when authenticated
+    ...(user ? [{ name: 'Mi Lista', href: '/favoritos' }] : []),
   ];
 
   if (user?.role === 'admin') {

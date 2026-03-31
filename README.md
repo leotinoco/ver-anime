@@ -1,5 +1,8 @@
 # 🎬 Anime Fan - Netflix Style Streaming
 
+[![Ver en Vivo](https://img.shields.io/badge/🌐_Ver_en_Vivo-ver--anime.vercel.app-red?style=for-the-badge)](https://ver-anime.vercel.app)
+[![Repositorio](https://img.shields.io/badge/GitHub-leotinoco%2Fver--anime-181717?style=for-the-badge&logo=github)](https://github.com/leotinoco/ver-anime)
+
 ![Anime Fan Legend](/miniatura-1200.avif)
 
 Una plataforma de streaming de anime moderna y fluida, inspirada en la interfaz de usuario de Netflix, diseñada para ofrecer la mejor experiencia de visualización gratuita y en alta definición.
