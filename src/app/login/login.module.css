@@ -1,0 +1,7 @@
+.bgBlur {
+  background-image: linear-gradient(to right, #141414 0%, transparent 50%, #141414 100%),
+    url(https://animeflv.net/uploads/animes/covers/7.jpg);
+  background-size: cover;
+  background-position: center;
+  filter: blur(10px);
+}

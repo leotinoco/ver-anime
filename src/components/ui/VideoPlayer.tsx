@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Download, MonitorPlay, Check, PlayCircle } from 'lucide-react';
+import { Download, MonitorPlay, PlayCircle } from 'lucide-react';
 
 interface Server {
   name: string;
@@ -99,11 +99,7 @@ export default function VideoPlayer({ servers }: VideoPlayerProps) {
               </a>
             )}
 
-            <button
-               className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-md text-sm font-bold transition-colors w-full md:w-auto"
-            >
-              <Check className="w-4 h-4" /> Marcar como Visto
-            </button>
+
           </div>
           
         </div>

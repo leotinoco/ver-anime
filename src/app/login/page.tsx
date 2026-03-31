@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { LogIn } from 'lucide-react';
 import { Suspense } from 'react';
+import styles from './login.module.css';
 
 function LoginForm() {
   const [identifier, setIdentifier] = useState('');
@@ -101,12 +102,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-[#141414] flex flex-col items-center justify-center py-12 px-4 relative overflow-hidden">
       {/* Heavy Blur background inspired by Netflix */}
-      <div className="absolute inset-0 w-full h-full opacity-30 pointer-events-none" style={{
-        backgroundImage: 'linear-gradient(to right, #141414 0%, transparent 50%, #141414 100%), url(https://animeflv.net/uploads/animes/covers/7.jpg)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        filter: 'blur(10px)',
-      }}></div>
+      <div className={`absolute inset-0 w-full h-full opacity-30 pointer-events-none ${styles.bgBlur}`}></div>
 
       <div className="w-full max-w-md bg-black/80 backdrop-blur-md rounded-xl p-8 shadow-2xl relative z-10 border border-zinc-800">
         <h1 className="text-3xl font-bold text-white mb-8 text-center">Inicia Sesión</h1>

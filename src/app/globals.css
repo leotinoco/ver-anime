@@ -41,11 +41,15 @@ body {
   background: var(--color-primary);
 }
 
-/* Hide scrollbar for carousels */
+/* Hide scrollbar for carousels
+   - ::-webkit-scrollbar → Chrome, Safari, Edge, Opera (WebKit/Blink)
+   - scrollbar-width     → Firefox (+ Chrome 121+)
+   - -ms-overflow-style  → IE / legacy Edge
+   Together these cover all major browsers. */
 .hide-scroll::-webkit-scrollbar {
   display: none;
 }
 .hide-scroll {
   -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  scrollbar-width: none; /* Firefox — Chrome 121+; Safari not supported (covered above) */
 }
