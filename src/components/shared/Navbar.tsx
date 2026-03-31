@@ -14,6 +14,9 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const notifRef = useRef<HTMLDivElement>(null);
   
   const { isSearchOpen, setSearchOpen, searchQuery, setSearchQuery } = useAppStore();
   const router = useRouter();
@@ -44,6 +47,26 @@ export default function Navbar() {
     };
     checkAuth();
   }, [pathname]);
+
+  // Fetch notifications when user is authenticated
+  useEffect(() => {
+    if (!user) return;
+    fetch('/api/notifications')
+      .then(r => r.json())
+      .then(d => { if (d.authenticated && d.notifications) setNotifications(d.notifications); })
+      .catch(() => {});
+  }, [user]);
+
+  // Close notification panel on outside click
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
+        setShowNotifications(false);
+      }
+    };
+    if (showNotifications) document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showNotifications]);
 
   const [showRatingsDropdown, setShowRatingsDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -189,9 +212,69 @@ export default function Navbar() {
             </button>
           </div>
           
-          <button aria-label="Notifications" title="Notifications" className="hidden md:block hover:text-gray-300 transition-colors">
-            <Bell className="w-5 h-5" />
-          </button>
+          {/* Bell / Notifications */}
+          {user && (
+            <div className="relative hidden md:block" ref={notifRef}>
+              <button
+                aria-label="Notificaciones"
+                title="Notificaciones"
+                className="relative hover:text-gray-300 transition-colors"
+                onClick={() => setShowNotifications(!showNotifications)}
+              >
+                <Bell className="w-5 h-5" />
+                {notifications.length > 0 && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary rounded-full text-[9px] font-black flex items-center justify-center text-white">
+                    {notifications.length > 9 ? '9+' : notifications.length}
+                  </span>
+                )}
+              </button>
+
+              <AnimatePresence>
+                {showNotifications && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 8, scale: 0.95 }}
+                    className="absolute right-0 top-full mt-3 w-72 bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl z-[200] overflow-hidden"
+                  >
+                    <div className="px-4 py-3 border-b border-zinc-800 flex items-center justify-between">
+                      <span className="text-white font-bold text-sm">Notificaciones</span>
+                      {notifications.length > 0 && (
+                        <span className="text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded-full font-bold">
+                          {notifications.length} sin ver
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="max-h-64 overflow-y-auto">
+                      {notifications.length === 0 ? (
+                        <p className="text-gray-500 text-xs text-center py-6">No hay nuevas notificaciones</p>
+                      ) : (
+                        notifications.map((n, i) => (
+                          <Link
+                            key={i}
+                            href={n.href}
+                            onClick={() => setShowNotifications(false)}
+                            className="flex items-start gap-3 px-4 py-3 hover:bg-zinc-800 transition-colors border-b border-zinc-800/50 last:border-0"
+                          >
+                            <span className="mt-0.5 w-2 h-2 rounded-full bg-primary shrink-0" />
+                            <div>
+                              <p className="text-white text-xs font-semibold leading-tight">
+                                Nuevo episodio: {n.animeTitle}
+                              </p>
+                              <p className="text-gray-400 text-[10px] mt-0.5">
+                                Episodio {n.episodeNumber} disponible
+                              </p>
+                            </div>
+                          </Link>
+                        ))
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          )}
           
           <Link 
             href={user ? '/perfil' : '/login'} 
