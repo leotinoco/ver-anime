@@ -5,25 +5,31 @@ import { verifyPassword, encrypt } from '@/lib/auth';
 
 export async function POST(req: NextRequest) {
   try {
-    const { email: inputEmail, password } = await req.json();
+    const { identifier: rawIdentifier, password } = await req.json();
 
-    if (!inputEmail || !password) {
-      return NextResponse.json({ error: 'Email e contraseña son obligatorios' }, { status: 400 });
+    if (!rawIdentifier || !password) {
+      return NextResponse.json({ error: 'Usuario/Email y contraseña son obligatorios' }, { status: 400 });
     }
 
-    const email = inputEmail.toLowerCase().trim();
+    const identifier = rawIdentifier.trim();
 
     await connectDB();
 
-    const user = await User.findOne({ email });
+    // Accept login via email OR username
+    const user = await User.findOne({
+      $or: [
+        { email: identifier.toLowerCase() },
+        { username: identifier },
+      ],
+    });
     if (!user) {
-      console.log(`[LOGIN] User not found: ${email}`);
+      console.log(`[LOGIN] User not found: ${identifier}`);
       return NextResponse.json({ error: 'Credenciales inválidas' }, { status: 401 });
     }
 
     const isMatch = await verifyPassword(password, user.passwordHash);
     if (!isMatch) {
-      console.log(`[LOGIN] Password mismatch for: ${email}`);
+      console.log(`[LOGIN] Password mismatch for: ${identifier}`);
       return NextResponse.json({ error: 'Credenciales inválidas' }, { status: 401 });
     }
 

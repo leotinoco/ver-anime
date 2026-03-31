@@ -121,7 +121,7 @@ export default function AdminPage() {
                     </td>
                     <td className="px-6 py-4 text-gray-500">{new Date(user.createdAt).toLocaleDateString()}</td>
                     <td className="px-6 py-4 text-right">
-                      <button className="text-gray-500 hover:text-red-500 p-2 transition-colors">
+                      <button aria-label="Eliminar usuario" className="text-gray-500 hover:text-red-500 p-2 transition-colors">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </td>
@@ -140,7 +140,7 @@ export default function AdminPage() {
                 <h3 className="text-xl font-bold flex items-center gap-2">
                   <UserPlus className="w-5 h-5 text-primary" /> Nuevo Usuario
                 </h3>
-                <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-white">
+                <button aria-label="Cerrar modal" onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-white">
                   <X className="w-6 h-6" />
                 </button>
               </div>
@@ -154,8 +154,9 @@ export default function AdminPage() {
                 )}
 
                 <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Nombre de Usuario</label>
+                  <label htmlFor="admin-username" className="block text-xs font-bold text-gray-500 uppercase mb-1">Nombre de Usuario</label>
                   <input 
+                    id="admin-username"
                     type="text" 
                     required 
                     className="w-full bg-zinc-800 border border-zinc-700 rounded p-2.5 text-white outline-none focus:border-primary"
@@ -165,8 +166,9 @@ export default function AdminPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Correo Electrónico</label>
+                  <label htmlFor="admin-email" className="block text-xs font-bold text-gray-500 uppercase mb-1">Correo Electrónico</label>
                   <input 
+                    id="admin-email"
                     type="email" 
                     required 
                     className="w-full bg-zinc-800 border border-zinc-700 rounded p-2.5 text-white outline-none focus:border-primary"
@@ -176,8 +178,9 @@ export default function AdminPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Contraseña Provisoria</label>
+                  <label htmlFor="admin-password" className="block text-xs font-bold text-gray-500 uppercase mb-1">Contraseña Provisoria</label>
                   <input 
+                    id="admin-password"
                     type="password" 
                     required 
                     className="w-full bg-zinc-800 border border-zinc-700 rounded p-2.5 text-white outline-none focus:border-primary"
@@ -187,8 +190,9 @@ export default function AdminPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Rol</label>
+                  <label htmlFor="admin-role" className="block text-xs font-bold text-gray-500 uppercase mb-1">Rol</label>
                   <select 
+                    id="admin-role"
                     className="w-full bg-zinc-800 border border-zinc-700 rounded p-2.5 text-white outline-none focus:border-primary capitalize"
                     value={formData.role}
                     onChange={(e) => setFormData({...formData, role: e.target.value})}

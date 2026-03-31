@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { CheckCircle2, Clock, Circle, ChevronDown } from 'lucide-react';
 
 type EpisodeStatus = 'pendiente' | 'viendo' | 'visto';
@@ -42,6 +42,11 @@ export default function EpisodeStatusBadge({
   const [status, setStatus] = useState<EpisodeStatus>(initialStatus);
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  // Sync when parent updates initialStatus (e.g. after fetching statusMap from API)
+  useEffect(() => {
+    setStatus(initialStatus);
+  }, [initialStatus]);
 
   const config = STATUS_CONFIG[status];
 

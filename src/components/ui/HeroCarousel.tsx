@@ -141,15 +141,17 @@ export default function HeroCarousel({ items }: { items: HeroItem[] }) {
       <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-4 md:px-8 z-20 pointer-events-none">
         <button 
           onClick={prevSlide}
+          aria-label="Diapositiva anterior"
           className="pointer-events-auto p-2 rounded-full bg-black/20 hover:bg-black/50 text-white/50 hover:text-white transition-all opacity-0 group-hover:opacity-100"
         >
-          <ChevronLeft size={48} />
+          <ChevronLeft size={48} aria-hidden="true" />
         </button>
         <button 
           onClick={nextSlide}
+          aria-label="Diapositiva siguiente"
           className="pointer-events-auto p-2 rounded-full bg-black/20 hover:bg-black/50 text-white/50 hover:text-white transition-all opacity-0 group-hover:opacity-100"
         >
-          <ChevronRight size={48} />
+          <ChevronRight size={48} aria-hidden="true" />
         </button>
       </div>
 

@@ -6,7 +6,7 @@ import { LogIn } from 'lucide-react';
 import { Suspense } from 'react';
 
 function LoginForm() {
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -23,7 +23,7 @@ function LoginForm() {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ identifier, password }),
       });
 
       if (!res.ok) {
@@ -49,17 +49,17 @@ function LoginForm() {
       )}
       
       <div>
-        <label className="block text-gray-400 text-sm font-medium mb-1" htmlFor="email">
-          Correo Electrónico
+        <label className="block text-gray-400 text-sm font-medium mb-1" htmlFor="identifier">
+          Usuario o Correo Electrónico
         </label>
         <input
-          id="email"
-          type="email"
+          id="identifier"
+          type="text"
           required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={identifier}
+          onChange={(e) => setIdentifier(e.target.value)}
           className="w-full bg-zinc-800 border border-zinc-700 rounded px-4 py-3 text-white focus:outline-none focus:border-red-500 transition-colors"
-          placeholder="tucorreo@tuservidor.com"
+          placeholder="usuario o correo@ejemplo.com"
         />
       </div>
 

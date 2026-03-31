@@ -2,6 +2,14 @@
 
 Todos los cambios notables en este proyecto serán documentados en este archivo. El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto sigue el [Versionado Semántico](https://semver.org/lang/es/).
 
+## [1.2.1] - 2026-03-31
+### Corregido
+- 🔐 **Login dual:** Los usuarios ahora pueden autenticarse usando su nombre de usuario **o** correo electrónico indistintamente.
+- 💾 **Estado de episodios:** Corregido bug crítico donde el cambio manual de estado (Pendiente / Viendo / Visto) no persistía al refrescar la página. El componente `EpisodeStatusBadge` ahora sincroniza correctamente cuando el padre actualiza el `statusMap` desde la API.
+- ♿ **Accesibilidad — Formularios:** Añadidos atributos `htmlFor`/`id` en todos los campos del formulario del panel de administración para cumplir con WCAG (screen readers).
+- ♿ **Accesibilidad — Botones:** Añadidos `aria-label` a los botones de iconos sin texto visible en las páginas de perfil y administración (`Trash2`, `Check`, `X`, `Edit2`).
+- ♿ **Accesibilidad — Carrusel:** Añadidos `aria-label` a los botones de navegación Anterior/Siguiente del `HeroCarousel`.
+
 ## [1.2.0] - 2026-03-31
 ### Añadido
 - 🎬 **Carrusel de Portada (Hero):** Implementado carrusel premium con 4 clásicos: "Hotaru no Haka", "Sen to Chihiro no Kamikakushi", "Cowboy Bebop" y "Monster".

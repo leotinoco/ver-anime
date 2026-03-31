@@ -170,15 +170,17 @@ export default function PerfilPage() {
                     <div className="flex items-center gap-2">
                       <input 
                         type="text" 
+                        aria-label="Nuevo nombre de la lista"
+                        placeholder="Nuevo nombre..."
                         className="bg-zinc-800 border border-primary rounded px-3 py-1 text-white outline-none"
                         value={newListName}
                         onChange={(e) => setNewListName(e.target.value)}
                         autoFocus
                       />
-                      <button onClick={() => handleRenameList(list._id)} className="p-1 text-green-500 hover:bg-green-500/10 rounded">
+                      <button onClick={() => handleRenameList(list._id)} aria-label="Confirmar nuevo nombre" className="p-1 text-green-500 hover:bg-green-500/10 rounded">
                         <Check size={18} />
                       </button>
-                      <button onClick={() => setEditingListId(null)} className="p-1 text-red-500 hover:bg-red-500/10 rounded">
+                      <button onClick={() => setEditingListId(null)} aria-label="Cancelar edición" className="p-1 text-red-500 hover:bg-red-500/10 rounded">
                         <X size={18} />
                       </button>
                     </div>
@@ -190,6 +192,7 @@ export default function PerfilPage() {
                           setEditingListId(list._id);
                           setNewListName(list.name);
                         }}
+                        aria-label={`Renombrar lista ${list.name}`}
                         className="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-white transition-opacity"
                       >
                         <Edit2 size={14} />
