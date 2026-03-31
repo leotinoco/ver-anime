@@ -45,21 +45,34 @@ export default function EpisodeStatusBadge({
 
   const config = STATUS_CONFIG[status];
 
+  const [error, setError] = useState(false);
+
   const updateStatus = async (newStatus: EpisodeStatus) => {
     if (newStatus === status) { setOpen(false); return; }
+    const previous = status;
+    setStatus(newStatus); // Optimistic update
+    setOpen(false);
     setSaving(true);
+    setError(false);
     try {
-      await fetch('/api/watch-progress', {
+      const res = await fetch('/api/watch-progress', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ animeSlug, episodeNumber, status: newStatus }),
       });
-      setStatus(newStatus);
+      if (!res.ok) {
+        // Revert on failure
+        setStatus(previous);
+        setError(true);
+        setTimeout(() => setError(false), 3000);
+      }
     } catch (e) {
       console.error(e);
+      setStatus(previous);
+      setError(true);
+      setTimeout(() => setError(false), 3000);
     } finally {
       setSaving(false);
-      setOpen(false);
     }
   };
 
@@ -77,13 +90,17 @@ export default function EpisodeStatusBadge({
       <button
         onClick={(e) => { e.stopPropagation(); setOpen(!open); }}
         disabled={saving}
-        title={`Estado: ${config.label}`}
+        title={error ? 'Error al guardar. ¿Estás conectado?' : `Estado: ${config.label}`}
         aria-label={`Cambiar estado del episodio. Estado actual: ${config.label}`}
-        className={`flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full border transition-all ${config.className} hover:opacity-80`}
+        className={`flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full border transition-all hover:opacity-80 ${
+          error
+            ? 'bg-red-500/20 text-red-400 border-red-500/40'
+            : config.className
+        }`}
       >
-        <span className={`w-2 h-2 rounded-full ${config.dot} ${saving ? 'animate-pulse' : ''}`} />
-        {config.label}
-        <ChevronDown className={`w-3 h-3 transition-transform ${open ? 'rotate-180' : ''}`} />
+        <span className={`w-2 h-2 rounded-full ${error ? 'bg-red-500' : config.dot} ${saving ? 'animate-pulse' : ''}`} />
+        {error ? '¡Error!' : config.label}
+        {!error && <ChevronDown className={`w-3 h-3 transition-transform ${open ? 'rotate-180' : ''}`} />}
       </button>
 
       {open && (
