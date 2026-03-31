@@ -2,7 +2,7 @@ import { getTopAnimeJikan, findSlugByTitle, JikanAnime } from '@/services/animeA
 import JikanAnimeCard from '@/components/ui/JikanAnimeCard';
 import { Star } from 'lucide-react';
 
-export const revalidate = 86400; // 1 day
+export const dynamic = 'force-dynamic'; // Avoid calling external APIs at build time
 
 export default async function TopMyAnimeListPage() {
   const topJikan = await getTopAnimeJikan();
