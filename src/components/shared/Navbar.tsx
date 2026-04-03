@@ -1,24 +1,38 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useRef } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { Search, Bell, Menu, X, User as UserIcon } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Search, Bell, Menu, X, User as UserIcon } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
-import { useRouter } from 'next/navigation';
-import { useAppStore } from '@/store/useAppStore';
+import { useRouter } from "next/navigation";
+import { useAppStore } from "@/store/useAppStore";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [notifications, setNotifications] = useState<any[]>([]);
+  interface User {
+    id: string;
+    username: string;
+    avatar?: string;
+    role?: string;
+  }
+
+  const [user, setUser] = useState<User | null>(null);
+  const [, setLoading] = useState(true);
+  interface Notification {
+    href: string;
+    animeTitle: string;
+    episodeNumber: number;
+  }
+
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const notifRef = useRef<HTMLDivElement>(null);
-  
-  const { isSearchOpen, setSearchOpen, searchQuery, setSearchQuery } = useAppStore();
+
+  const { isSearchOpen, setSearchOpen, searchQuery, setSearchQuery } =
+    useAppStore();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -26,21 +40,21 @@ export default function Navbar() {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 0);
     };
-    
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await fetch('/api/auth/me');
+        const res = await fetch("/api/auth/me");
         const data = await res.json();
         if (data.authenticated) {
           setUser(data.user);
         }
       } catch (err) {
-        console.error('Auth check failed', err);
+        console.error("Auth check failed", err);
       } finally {
         setLoading(false);
       }
@@ -51,9 +65,12 @@ export default function Navbar() {
   // Fetch notifications when user is authenticated
   useEffect(() => {
     if (!user) return;
-    fetch('/api/notifications')
-      .then(r => r.json())
-      .then(d => { if (d.authenticated && d.notifications) setNotifications(d.notifications); })
+    fetch("/api/notifications")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.authenticated && d.notifications)
+          setNotifications(d.notifications);
+      })
       .catch(() => {});
   }, [user]);
 
@@ -64,8 +81,9 @@ export default function Navbar() {
         setShowNotifications(false);
       }
     };
-    if (showNotifications) document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    if (showNotifications)
+      document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showNotifications]);
 
   const [showRatingsDropdown, setShowRatingsDropdown] = useState(false);
@@ -73,63 +91,89 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setShowRatingsDropdown(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const navLinks = [
-    { name: 'Inicio', href: '/' },
-    { name: 'Categorías', href: '/categorias' },
-    { 
-      name: 'Mejor calificados', 
-      href: '/mejor-calificados',
+    { name: "Inicio", href: "/" },
+    { name: "Categorías", href: "/categorias" },
+    {
+      name: "Mejor calificados",
+      href: "/mejor-calificados",
       submenu: [
-        { name: 'En emisión', href: '/mejor-calificados' },
-        { name: 'Top MyAnimeList', href: '/mejor-calificados-myanimelist' }
-      ]
+        { name: "En emisión", href: "/mejor-calificados" },
+        { name: "Top MyAnimeList", href: "/mejor-calificados-myanimelist" },
+      ],
     },
     // Only show Mi Lista when authenticated
-    ...(user ? [{ name: 'Mi Lista', href: '/favoritos' }] : []),
+    ...(user ? [{ name: "Mi Lista", href: "/favoritos" }] : []),
   ];
 
-  if (user?.role === 'admin') {
-    navLinks.push({ name: 'Admin', href: '/admin' });
+  if (user?.role === "admin") {
+    navLinks.push({ name: "Admin", href: "/admin" });
   }
 
   return (
-    <header 
+    <header
       className={`fixed top-0 w-full z-50 transition-colors duration-300 ${
-        isScrolled ? 'bg-[#141414] shadow-md' : 'bg-gradient-to-b from-black/80 to-transparent'
+        isScrolled
+          ? "bg-[#141414] shadow-md"
+          : "bg-gradient-to-b from-black/80 to-transparent"
       }`}
     >
       <div className="flex items-center justify-between px-4 md:px-12 py-4">
         <div className="flex items-center gap-8">
           {/* Logo */}
-          <Link href="/" className="text-primary font-bold text-2xl tracking-tight hover:scale-105 transition-transform">
+          <Link
+            href="/"
+            className="text-primary font-bold text-2xl tracking-tight hover:scale-105 transition-transform"
+          >
             Anime Fan
           </Link>
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-gray-200">
             {navLinks.map((link) => (
-              <div key={link.name} className="relative group/nav" ref={link.submenu ? dropdownRef : null}>
+              <div
+                key={link.name}
+                className="relative group/nav"
+                ref={link.submenu ? dropdownRef : null}
+              >
                 {link.submenu ? (
-                  <div 
+                  <div
                     className="flex items-center gap-1 cursor-pointer transition-colors hover:text-white text-gray-400 py-2"
                     onMouseEnter={() => setShowRatingsDropdown(true)}
                     onClick={() => setShowRatingsDropdown(!showRatingsDropdown)}
                   >
                     {link.name}
-                    <motion.span animate={{ rotate: showRatingsDropdown ? 180 : 0 }}>
-                      <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    <motion.span
+                      animate={{ rotate: showRatingsDropdown ? 180 : 0 }}
+                    >
+                      <svg
+                        width="10"
+                        height="6"
+                        viewBox="0 0 10 6"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M1 1L5 5L9 1"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
                       </svg>
                     </motion.span>
-                    
+
                     <AnimatePresence>
                       {showRatingsDropdown && (
                         <motion.div
@@ -144,7 +188,9 @@ export default function Navbar() {
                               key={sub.name}
                               href={sub.href}
                               className={`block px-4 py-2 hover:bg-zinc-800 transition-colors ${
-                                pathname === sub.href ? 'text-primary font-bold' : 'text-gray-300'
+                                pathname === sub.href
+                                  ? "text-primary font-bold"
+                                  : "text-gray-300"
                               }`}
                               onClick={() => setShowRatingsDropdown(false)}
                             >
@@ -159,7 +205,9 @@ export default function Navbar() {
                   <Link
                     href={link.href}
                     className={`transition-colors hover:text-white py-2 ${
-                      pathname === link.href ? 'text-white font-semibold' : 'text-gray-400'
+                      pathname === link.href
+                        ? "text-white font-semibold"
+                        : "text-gray-400"
                     }`}
                   >
                     {link.name}
@@ -183,7 +231,7 @@ export default function Navbar() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' && searchQuery.trim() !== '') {
+                  if (e.key === "Enter" && searchQuery.trim() !== "") {
                     router.push(`/buscar?q=${encodeURIComponent(searchQuery)}`);
                     setSearchOpen(false);
                   }
@@ -195,14 +243,14 @@ export default function Navbar() {
                 }}
               />
             )}
-            <button 
-              aria-label="Search" 
-              title="Search" 
+            <button
+              aria-label="Search"
+              title="Search"
               className="hover:text-gray-300 transition-colors"
               onClick={() => {
                 if (!isSearchOpen) {
                   setSearchOpen(true);
-                } else if (searchQuery.trim() !== '') {
+                } else if (searchQuery.trim() !== "") {
                   router.push(`/buscar?q=${encodeURIComponent(searchQuery)}`);
                   setSearchOpen(false);
                 }
@@ -211,7 +259,7 @@ export default function Navbar() {
               <Search className="w-5 h-5" />
             </button>
           </div>
-          
+
           {/* Bell / Notifications */}
           {user && (
             <div className="relative hidden md:block" ref={notifRef}>
@@ -224,7 +272,7 @@ export default function Navbar() {
                 <Bell className="w-5 h-5" />
                 {notifications.length > 0 && (
                   <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary rounded-full text-[9px] font-black flex items-center justify-center text-white">
-                    {notifications.length > 9 ? '9+' : notifications.length}
+                    {notifications.length > 9 ? "9+" : notifications.length}
                   </span>
                 )}
               </button>
@@ -238,7 +286,9 @@ export default function Navbar() {
                     className="absolute right-0 top-full mt-3 w-72 bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl z-[200] overflow-hidden"
                   >
                     <div className="px-4 py-3 border-b border-zinc-800 flex items-center justify-between">
-                      <span className="text-white font-bold text-sm">Notificaciones</span>
+                      <span className="text-white font-bold text-sm">
+                        Notificaciones
+                      </span>
                       {notifications.length > 0 && (
                         <span className="text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded-full font-bold">
                           {notifications.length} sin ver
@@ -248,7 +298,9 @@ export default function Navbar() {
 
                     <div className="max-h-64 overflow-y-auto">
                       {notifications.length === 0 ? (
-                        <p className="text-gray-500 text-xs text-center py-6">No hay nuevas notificaciones</p>
+                        <p className="text-gray-500 text-xs text-center py-6">
+                          No hay nuevas notificaciones
+                        </p>
                       ) : (
                         notifications.map((n, i) => (
                           <Link
@@ -270,35 +322,63 @@ export default function Navbar() {
                         ))
                       )}
                     </div>
+
+                    <div className="border-t border-zinc-800 px-4 py-3">
+                      <Link
+                        href="/notificaciones"
+                        onClick={() => setShowNotifications(false)}
+                        className="text-xs font-bold text-gray-300 hover:text-white transition-colors"
+                      >
+                        Configurar notificaciones
+                      </Link>
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>
             </div>
           )}
-          
-          <Link 
-            href={user ? '/perfil' : '/login'} 
+
+          <Link
+            href={user ? "/perfil" : "/login"}
             className="flex items-center gap-2 cursor-pointer group"
-            aria-label={user ? 'Mi Perfil' : 'Iniciar Sesión'}
-            title={user ? 'Mi Perfil' : 'Iniciar Sesión'}
+            aria-label={user ? "Mi Perfil" : "Iniciar Sesión"}
+            title={user ? "Mi Perfil" : "Iniciar Sesión"}
           >
-            <div className={`w-8 h-8 rounded flex items-center justify-center overflow-hidden transition-colors ${user ? 'bg-primary' : 'bg-zinc-800'}`}>
-               {user?.avatar ? (
-                 <img src={user.avatar} alt={user.username} className="w-full h-full object-cover" />
-               ) : (
-                 <UserIcon className={`w-5 h-5 ${user ? 'text-white' : 'text-gray-300 group-hover:text-white'}`} />
-               )}
+            <div
+              className={`w-8 h-8 rounded flex items-center justify-center overflow-hidden transition-colors ${user ? "bg-primary" : "bg-zinc-800"}`}
+            >
+              {user?.avatar ? (
+                <img
+                  src={user.avatar}
+                  alt={user.username}
+                  className="w-full h-full object-cover"
+                  width={32}
+                  height={32}
+                />
+              ) : (
+                <UserIcon
+                  className={`w-5 h-5 ${user ? "text-white" : "text-gray-300 group-hover:text-white"}`}
+                />
+              )}
             </div>
-            {user && <span className="hidden lg:inline text-xs font-bold text-gray-300 group-hover:text-white">{user.username}</span>}
+            {user && (
+              <span className="hidden lg:inline text-xs font-bold text-gray-300 group-hover:text-white">
+                {user.username}
+              </span>
+            )}
           </Link>
 
-          <button 
+          <button
             aria-label="Toggle mobile menu"
             title="Toggle mobile menu"
             className="md:hidden text-white"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {mobileMenuOpen ? (
+              <X className="w-6 h-6" />
+            ) : (
+              <Menu className="w-6 h-6" />
+            )}
           </button>
         </div>
       </div>
@@ -317,7 +397,9 @@ export default function Navbar() {
                 <div key={link.name}>
                   {link.submenu ? (
                     <div className="flex flex-col gap-3">
-                      <span className="text-sm text-gray-500 font-bold uppercase tracking-widest">{link.name}</span>
+                      <span className="text-sm text-gray-500 font-bold uppercase tracking-widest">
+                        {link.name}
+                      </span>
                       <div className="flex flex-col gap-3 pl-4 border-l border-zinc-800">
                         {link.submenu.map((sub) => (
                           <Link
@@ -325,7 +407,9 @@ export default function Navbar() {
                             href={sub.href}
                             onClick={() => setMobileMenuOpen(false)}
                             className={`text-sm ${
-                              pathname === sub.href ? 'text-primary font-bold' : 'text-gray-400'
+                              pathname === sub.href
+                                ? "text-primary font-bold"
+                                : "text-gray-400"
                             }`}
                           >
                             {sub.name}
@@ -339,7 +423,9 @@ export default function Navbar() {
                       href={link.href}
                       onClick={() => setMobileMenuOpen(false)}
                       className={`text-sm ${
-                        pathname === link.href ? 'text-white font-bold' : 'text-gray-400'
+                        pathname === link.href
+                          ? "text-white font-bold"
+                          : "text-gray-400"
                       }`}
                     >
                       {link.name}

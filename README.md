@@ -45,6 +45,12 @@ DATABASE_URL=tu_mongodb_url
 JWT_SECRET=tu_secreto_super_seguro
 NEXT_PUBLIC_API_BASE=https://animeflv.ahmedrangel.com/api
 
+# (Opcional) Push Notifications (Web Push)
+NEXT_PUBLIC_VAPID_PUBLIC_KEY=tu_vapid_public_key
+VAPID_PRIVATE_KEY=tu_vapid_private_key
+VAPID_SUBJECT=mailto:tu_correo@dominio.com
+PUSH_DISPATCH_SECRET=tu_secreto_para_dispatch
+
 # 4. Iniciar en desarrollo
 npm run dev
 ```

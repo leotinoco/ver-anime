@@ -49,6 +49,8 @@ export default function Footer() {
           {/* Soporte */}
           <div className="flex flex-col gap-2">
             <h4 className="text-white font-bold mb-1">Soporte</h4>
+            <Link href="/ayuda" className="hover:text-white transition-colors">Ayuda y FAQ</Link>
+            <Link href="/notificaciones" className="hover:text-white transition-colors">Notificaciones</Link>
             <Link href="/changelog" className="hover:text-white transition-colors">Changelog</Link>
             <a href="https://github.com/leotinoco/ver-anime" {...EXT} className="hover:text-white transition-colors">
               Repositorio GitHub

@@ -63,7 +63,7 @@ export default function EpisodeStatusBadge({
       const res = await fetch('/api/watch-progress', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ animeSlug, episodeNumber, status: newStatus }),
+        body: JSON.stringify({ animeSlug, episodeNumber, status: newStatus, source: 'manual' }),
       });
       if (!res.ok) {
         // Revert on failure
