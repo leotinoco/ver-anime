@@ -7,6 +7,7 @@ import { WatchProgress } from "@/models/WatchProgress";
 import { EpisodePublication } from "@/models/EpisodePublication";
 import { PushNotificationLog } from "@/models/PushNotificationLog";
 import { getLatestEpisodes } from "@/services/animeApi";
+import webpush from "web-push";
 
 type NormalizedLatestEpisode = {
   animeSlug: string;
@@ -207,29 +208,8 @@ export async function POST(req: NextRequest) {
     const uid = String(l.userId);
     const set = recentAnimeByUserId.get(uid) || new Set<string>();
     set.add(String(l.animeSlug));
-    recentAnimeByUserId.set(uid, set);
   }
 
-  type WebPushClient = {
-    setVapidDetails: (
-      subject: string,
-      publicKey: string,
-      privateKey: string,
-    ) => void;
-    sendNotification: (
-      subscription: {
-        endpoint: string;
-        keys: { p256dh: string; auth: string };
-      },
-      payload: string,
-      options?: { TTL?: number },
-    ) => Promise<void>;
-  };
-
-  const webpushMod = (await import("web-push")) as unknown as {
-    default?: WebPushClient;
-  } & WebPushClient;
-  const webpush: WebPushClient = webpushMod.default || webpushMod;
   webpush.setVapidDetails(vapidSubject, vapidPublicKey, vapidPrivateKey);
 
   let sent = 0;
@@ -359,7 +339,7 @@ export async function POST(req: NextRequest) {
         image: c.image,
         icon: "/anime-fan-250x250.avif",
         url: c.url,
-        notificationId: String((log as { _id: unknown })._id),
+        notificationId: String((log as any)._id),
         tag: `anime-${c.animeSlug}`,
       });
 
@@ -378,7 +358,7 @@ export async function POST(req: NextRequest) {
         const statusCode =
           typeof e?.statusCode === "number" ? e.statusCode : null;
         await PushNotificationLog.updateOne(
-          { _id: (log as { _id: unknown })._id },
+          { _id: (log as any)._id },
           {
             $set: {
               sendStatus: "failed",
