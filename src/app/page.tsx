@@ -1,6 +1,7 @@
 import { getAnimesOnAir, getLatestEpisodes, getAnimeDetails } from '@/services/animeApi';
-import HeroCarousel from '@/components/ui/HeroCarousel';
 import Carousel from '@/components/ui/Carousel';
+import BraveBanner from '@/components/ui/BraveBanner';
+import RecommendedCarousel from '@/components/ui/RecommendedCarousel';
 
 export const revalidate = 3600; // revalidate every hour for ISR
 
@@ -9,33 +10,6 @@ export default async function Home() {
     getAnimesOnAir(),
     getLatestEpisodes()
   ]);
-
-  // Featured items for the Hero Carousel
-  const featuredSlugs = [
-    'hotaru-no-haka',
-    'sen-to-chihiro-no-kamikakushi',
-    'cowboy-bebop',
-    'monster'
-  ];
-
-  const featuredItems = await Promise.all(
-    featuredSlugs.map(async (slug) => {
-      try {
-        const details = await getAnimeDetails(slug);
-        if (!details) return null;
-        return {
-          slug,
-          title: details.title,
-          cover: details.cover,
-          synopsis: details.synopsis,
-          type: details.type,
-          year: details.year
-        };
-      } catch (e) {
-        return null;
-      }
-    })
-  ).then(items => items.filter(item => item !== null));
 
   // The AnimeOnAir endpoint from the unofficial API does NOT return covers.
   // We must enrich a slice of the trends by fetching their details.  
@@ -58,21 +32,24 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen bg-[#141414] text-white pb-12">
-      <HeroCarousel items={featuredItems as any[]} />
+      {/* Nuevo Hero Premium (Carrusel de 4 items con 12 animes totales) */}
+      <div className="pt-8">
+        <RecommendedCarousel />
+      </div>
       
-      <div className="relative z-20 -mt-[10%] md:-mt-[5%] space-y-8">
-        {onAir && onAir.length > 0 && (
-          <Carousel 
-            title="En Emisión y Tendencias" 
-            items={onAir} 
-          />
-        )}
-        
+      <div className="space-y-8">
         {latestEpisodes && latestEpisodes.length > 0 && (
           <Carousel 
             title="Últimos Episodios" 
             items={latestEpisodes} 
             isEpisode={true}
+          />
+        )}
+
+        {onAir && onAir.length > 0 && (
+          <Carousel 
+            title="En Emisión y Tendencias" 
+            items={onAir} 
           />
         )}
       </div>
