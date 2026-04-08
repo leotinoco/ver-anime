@@ -11,6 +11,7 @@ interface EpisodeStatusBadgeProps {
   initialStatus?: EpisodeStatus;
   compact?: boolean;
   dropdownDirection?: 'up' | 'down';
+  onStatusChange?: (updatedPreviousCount: number) => void;
 }
 
 const STATUS_CONFIG = {
@@ -40,6 +41,7 @@ export default function EpisodeStatusBadge({
   initialStatus = 'pendiente',
   compact = false,
   dropdownDirection = 'down',
+  onStatusChange,
 }: EpisodeStatusBadgeProps) {
   const [status, setStatus] = useState<EpisodeStatus>(initialStatus);
   const [open, setOpen] = useState(false);
@@ -72,6 +74,12 @@ export default function EpisodeStatusBadge({
         setStatus(previous);
         setError(true);
         setTimeout(() => setError(false), 3000);
+      } else {
+        const data = await res.json();
+        // Notify parent if previous episodes were bulk-updated
+        if (onStatusChange) {
+          onStatusChange(data.updatedPreviousCount ?? 0);
+        }
       }
     } catch (e) {
       console.error(e);

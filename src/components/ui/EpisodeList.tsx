@@ -18,7 +18,7 @@ type StatusMap = Record<number, 'pendiente' | 'viendo' | 'visto'>;
 export default function EpisodeList({ episodes, animeSlug, animeTitle }: EpisodeListProps) {
   const [statusMap, setStatusMap] = useState<StatusMap>({});
 
-  useEffect(() => {
+  const fetchStatusMap = () => {
     fetch(`/api/watch-progress?animeSlug=${animeSlug}`)
       .then(res => res.json())
       .then(data => {
@@ -27,7 +27,19 @@ export default function EpisodeList({ episodes, animeSlug, animeTitle }: Episode
         }
       })
       .catch(() => {}); // Silently fail if not authenticated
+  };
+
+  useEffect(() => {
+    fetchStatusMap();
   }, [animeSlug]);
+
+  // Called by EpisodeStatusBadge after a successful save.
+  // If previous episodes were bulk-updated, refetch the full map.
+  const handleStatusChange = (updatedPreviousCount: number) => {
+    if (updatedPreviousCount > 0) {
+      fetchStatusMap();
+    }
+  };
 
   if (!episodes || episodes.length === 0) {
     return <p className="text-gray-500 italic text-center py-8">No hay episodios disponibles.</p>;
@@ -67,6 +79,7 @@ export default function EpisodeList({ episodes, animeSlug, animeTitle }: Episode
                 episodeNumber={ep.number}
                 initialStatus={epStatus}
                 dropdownDirection={isLastFew ? 'up' : 'down'}
+                onStatusChange={handleStatusChange}
               />
             </div>
           </div>
