@@ -35,8 +35,9 @@ export default function EpisodeList({ episodes, animeSlug, animeTitle }: Episode
 
   return (
     <div className="grid gap-3 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
-      {episodes.map((ep) => {
+      {episodes.map((ep, index) => {
         const epStatus = statusMap[ep.number] || 'pendiente';
+        const isLastFew = episodes.length > 4 && index >= episodes.length - 2;
         return (
           <div
             key={ep.number}
@@ -65,6 +66,7 @@ export default function EpisodeList({ episodes, animeSlug, animeTitle }: Episode
                 animeSlug={animeSlug}
                 episodeNumber={ep.number}
                 initialStatus={epStatus}
+                dropdownDirection={isLastFew ? 'up' : 'down'}
               />
             </div>
           </div>

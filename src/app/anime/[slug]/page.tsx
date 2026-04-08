@@ -4,6 +4,10 @@ import { getAnimeDetails } from '@/services/animeApi';
 import { notFound } from 'next/navigation';
 import AddToListButton from '@/components/ui/AddToListButton';
 import EpisodeList from '@/components/ui/EpisodeList';
+import { cookies } from 'next/headers';
+import { decrypt } from '@/lib/auth';
+import connectDB from '@/lib/mongoose';
+import { WatchProgress } from '@/models/WatchProgress';
 
 export const revalidate = 3600; // 1 hr cache
 
@@ -27,6 +31,40 @@ export default async function AnimeDetailsPage({ params }: { params: Promise<{ s
 
   if (!anime || !anime.title) {
     notFound();
+  }
+
+  let userProgress: Record<number, 'pendiente' | 'viendo' | 'visto'> = {};
+  try {
+    const cookieStore = await cookies();
+    const sessionCookie = cookieStore.get('session');
+    if (sessionCookie) {
+      const payload = await decrypt(sessionCookie.value);
+      if (payload) {
+        await connectDB();
+        const progressList = await WatchProgress.find({
+          userId: payload.userId,
+          animeSlug: resolvedParams.slug,
+        }).lean();
+        
+        progressList.forEach((p: any) => {
+          userProgress[p.episodeNumber] = p.status;
+        });
+      }
+    }
+  } catch (e) {
+    // Silently continue
+  }
+
+  let targetEpisode = null;
+  if (anime.episodes && anime.episodes.length > 0) {
+    const sortedEpisodes = [...anime.episodes].sort((a, b) => a.number - b.number);
+    const minViendo = sortedEpisodes.find(ep => userProgress[ep.number] === 'viendo');
+    if (minViendo) {
+      targetEpisode = minViendo;
+    } else {
+      const minPendiente = sortedEpisodes.find(ep => !userProgress[ep.number] || userProgress[ep.number] === 'pendiente');
+      targetEpisode = minPendiente ? minPendiente : sortedEpisodes[0];
+    }
   }
 
   return (
@@ -78,13 +116,13 @@ export default async function AnimeDetailsPage({ params }: { params: Promise<{ s
                 </div>
 
                 <div className="flex items-center gap-4 mb-8">
-                  {anime.episodes && anime.episodes.length > 0 ? (
+                  {targetEpisode ? (
                     <Link
-                      href={`/ver/${resolvedParams.slug}/${anime.episodes[anime.episodes.length - 1].number}`}
+                      href={`/ver/${resolvedParams.slug}/${targetEpisode.number}`}
                       className="flex items-center gap-2 bg-white text-black px-8 py-3 rounded text-lg font-bold hover:bg-white/80 transition-colors"
                     >
                       <Play className="w-6 h-6 fill-black" /> 
-                      Ver Ep. {anime.episodes[anime.episodes.length - 1].number}
+                      Ver Ep. {targetEpisode.number}
                     </Link>
                   ) : (
                    <button disabled className="bg-gray-600 text-white px-8 py-3 rounded text-lg font-bold opacity-50 cursor-not-allowed">

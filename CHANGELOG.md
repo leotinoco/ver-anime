@@ -2,6 +2,15 @@
 
 Todos los cambios notables en este proyecto serán documentados en este archivo. El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto sigue el [Versionado Semántico](https://semver.org/lang/es/).
 
+## [1.3.1] - 2026-04-08
+### Añadido
+- ⏯️ **Reanudación Inteligente**: El botón "Ver Ep." en la página de detalles ahora sugiere automáticamente el menor episodio en estado "Viendo" o el menor "Pendiente", facilitando el seguimiento de series largas.
+- 🏷️ **Títulos Claros**: Ahora el número de episodio se incluye explícitamente en el título principal de la página de reproducción (ej. "Anime - Episodio 1").
+
+### Corregido
+- 🔼 **Menú Anti-Recorte**: La insignia de estado del episodio ahora detecta su posición y se abre hacia arriba si está al final de la lista, evitando que el menú quede oculto.
+- 📑 **Nombres Completos**: Los títulos de los animes en la sección de "Mis Listas" ya no se truncan, mostrando el nombre completo en todas las tarjetas.
+
 ## [1.3.0] - 2026-04-04
 ### Añadido
 - 🎢 **Hero Carousel Premium v2**: Sistema de bucle infinito (seamless) con auto-avance 1-a-1 cada 3 segundos y temporizador de alta precisión.

@@ -77,7 +77,7 @@ export default async function FavoritosPage() {
                         <Link href={`/anime/${anime.slug}`} className="bg-primary hover:bg-red-700 text-white p-2 rounded-full mb-2">
                            <ListVideo className="w-5 h-5" />
                         </Link>
-                        <p className="text-xs font-semibold text-center mt-2 line-clamp-2">{anime.title}</p>
+                        <p className="text-xs font-semibold text-center mt-2 px-1">{anime.title}</p>
                       </div>
                       
                       <div className="absolute top-2 left-2 bg-black/50 p-1 rounded backdrop-blur-sm opacity-0 group-hover:opacity-100 cursor-grab">

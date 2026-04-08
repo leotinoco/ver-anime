@@ -10,6 +10,7 @@ interface EpisodeStatusBadgeProps {
   episodeNumber: number;
   initialStatus?: EpisodeStatus;
   compact?: boolean;
+  dropdownDirection?: 'up' | 'down';
 }
 
 const STATUS_CONFIG = {
@@ -38,6 +39,7 @@ export default function EpisodeStatusBadge({
   episodeNumber,
   initialStatus = 'pendiente',
   compact = false,
+  dropdownDirection = 'down',
 }: EpisodeStatusBadgeProps) {
   const [status, setStatus] = useState<EpisodeStatus>(initialStatus);
   const [open, setOpen] = useState(false);
@@ -109,7 +111,7 @@ export default function EpisodeStatusBadge({
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg shadow-2xl z-50 p-1 min-w-[130px]">
+        <div className={`absolute right-0 ${dropdownDirection === 'up' ? 'bottom-full mb-1' : 'top-full mt-1'} bg-zinc-900 border border-zinc-700 rounded-lg shadow-2xl z-50 p-1 min-w-[130px]`}>
           {(Object.keys(STATUS_CONFIG) as EpisodeStatus[]).map((s) => {
             const sc = STATUS_CONFIG[s];
             return (

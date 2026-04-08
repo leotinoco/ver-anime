@@ -74,8 +74,13 @@ export default async function WatchPage({ params }: { params: Promise<{ slug: st
           </Link>
           
           <h1 className="text-2xl md:text-4xl font-black mt-4 drop-shadow-md">
-            {title}
+            {animeData?.title ? `${animeData.title} - Episodio ${episode}` : `Episodio ${episode}`}
           </h1>
+          {episodeData.title && !episodeData.title.toLowerCase().includes(`episodio ${episode}`) && (
+            <h2 className="text-xl text-zinc-400 mt-2 font-semibold">
+              {episodeData.title}
+            </h2>
+          )}
         </div>
 
         {/* Video Player */}
