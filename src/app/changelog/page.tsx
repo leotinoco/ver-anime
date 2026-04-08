@@ -11,7 +11,8 @@ export default function ChangelogPage() {
         '⏯️ Reanudación Inteligente: El botón "Ver Ep." ahora sugiere el siguiente episodio lógico (Viendo > Pendiente).',
         '🏷️ Títulos Enriquecidos: Inclusión explícita del número de episodio en el título de la página de reproducción.',
         '🔼 Menú Anti-Recorte: Mejora en la lógica del EpisodeStatusBadge para abrirse hacia arriba al final de las listas.',
-        '📑 Nombres Completos: Los títulos de animes en favoritos ya no se truncan con puntos suspensivos.'
+        '📑 Nombres Completos: Los títulos de animes en favoritos ya no se truncan con puntos suspensivos.',
+        '👁️ Marcado Automático: Los episodios anteriores se marcan como "Visto" automáticamente al avanzar en la serie.'
       ]
     },
     {
