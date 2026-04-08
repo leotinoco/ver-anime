@@ -3,6 +3,30 @@ import { Milestone, Rocket, ShieldCheck, Sparkles, Zap } from 'lucide-react';
 export default function ChangelogPage() {
   const updates = [
     {
+      version: 'v1.3.1',
+      date: '08 de Abril, 2026',
+      title: 'Mejoras de UX y Correcciones de UI',
+      icon: <Zap className="text-yellow-400" />,
+      changes: [
+        '⏯️ Reanudación Inteligente: El botón "Ver Ep." ahora sugiere el siguiente episodio lógico (Viendo > Pendiente).',
+        '🏷️ Títulos Enriquecidos: Inclusión explícita del número de episodio en el título de la página de reproducción.',
+        '🔼 Menú Anti-Recorte: Mejora en la lógica del EpisodeStatusBadge para abrirse hacia arriba al final de las listas.',
+        '📑 Nombres Completos: Los títulos de animes en favoritos ya no se truncan con puntos suspensivos.'
+      ]
+    },
+    {
+      version: 'v1.3.0',
+      date: '04 de Abril, 2026',
+      title: 'Hero Carousel Premium v2 y Optimización AVIF',
+      icon: <Rocket className="text-blue-500" />,
+      changes: [
+        'Sistema de carrusel infinito seamless con auto-avance táctico.',
+        'Migración masiva de imágenes a formato .avif reduciendo el peso en un 94%.',
+        'Soporte táctil avanzado para navegación en dispositivos móviles.',
+        'Regeneración de pósters cinematográficos en alta resolución.'
+      ]
+    },
+    {
       version: 'v1.2.1',
       date: '30 de Marzo, 2026',
       title: 'Catálogo de Géneros Completo',
