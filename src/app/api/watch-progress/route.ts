@@ -127,23 +127,25 @@ export async function POST(req: NextRequest) {
           normalizedSource === "manual" && status === "visto";
         if (!shouldAutoMarkPrevious) return;
 
+        // Buscamos cualquier episodio anterior para validar series/season y saber su estado actual
         const previous = await WatchProgress.find(
           {
             userId: payload.userId,
             animeSlug,
             episodeNumber: { $lt: episodeNum },
-            status: { $in: ["pendiente", "viendo"] },
           },
           { episodeNumber: 1, status: 1, seriesId: 1, seasonId: 1, _id: 0 },
           { session },
         ).lean();
 
+        const existingMap = new Map();
         for (const doc of previous as Array<{
           seriesId?: unknown;
           seasonId?: unknown;
           episodeNumber: number;
           status: EpisodeStatus;
         }>) {
+          existingMap.set(doc.episodeNumber, doc.status);
           const prevSeriesId =
             typeof doc.seriesId === "string" ? doc.seriesId : null;
           const prevSeasonId =
@@ -164,33 +166,40 @@ export async function POST(req: NextRequest) {
           }
         }
 
-        updatedPrevious = (
-          previous as Array<{ episodeNumber: number; status: EpisodeStatus }>
-        ).map((p) => ({
-          episodeNumber: p.episodeNumber,
-          from: p.status,
-          to: "visto",
-        }));
+        const bulkOps = [];
+        for (let i = 1; i < episodeNum; i++) {
+          const currentStatus = existingMap.get(i);
+          if (currentStatus !== "visto") {
+            bulkOps.push({
+              updateOne: {
+                filter: { userId: payload.userId, animeSlug, episodeNumber: i },
+                update: {
+                  $set: {
+                    status: "visto",
+                    watchedAt: now,
+                    seriesId: resolvedSeriesId,
+                    seasonId: resolvedSeasonId,
+                  },
+                  $setOnInsert: {
+                    userId: payload.userId,
+                    animeSlug,
+                    episodeNumber: i,
+                  },
+                },
+                upsert: true,
+              },
+            });
+            updatedPrevious.push({
+              episodeNumber: i,
+              from: currentStatus || "pendiente",
+              to: "visto",
+            });
+          }
+        }
 
-        if (updatedPrevious.length === 0) return;
+        if (bulkOps.length === 0) return;
 
-        await WatchProgress.updateMany(
-          {
-            userId: payload.userId,
-            animeSlug,
-            episodeNumber: { $lt: episodeNum },
-            status: { $in: ["pendiente", "viendo"] },
-          },
-          {
-            $set: {
-              status: "visto",
-              watchedAt: now,
-              seriesId: resolvedSeriesId,
-              seasonId: resolvedSeasonId,
-            },
-          },
-          { session },
-        );
+        await WatchProgress.bulkWrite(bulkOps, { session });
       });
 
       const elapsedMs = Date.now() - startedAt;

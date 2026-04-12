@@ -34,6 +34,12 @@ export default async function WatchPage({ params }: { params: Promise<{ slug: st
 
   const title = episodeData.title || (animeData?.title ? `${animeData.title} - Episodio ${episode}` : `Episodio ${episode}`);
 
+  const parsedEpisode = parseInt(episode);
+  const maxEpisode = animeData?.episodes && animeData.episodes.length > 0
+    ? Math.max(...animeData.episodes.map((e: any) => e.number))
+    : parsedEpisode;
+  const isLastAvailableEpisode = parsedEpisode >= maxEpisode;
+
   // Get user session and episode status
   let initialStatus: 'pendiente' | 'viendo' | 'visto' = 'pendiente';
   let isAuthenticated = false;
@@ -97,26 +103,40 @@ export default async function WatchPage({ params }: { params: Promise<{ slug: st
         
         {/* Next/Prev Navigation */}
         <div className="mt-8 flex justify-between items-center max-w-5xl mx-auto border-t border-zinc-800 pt-6">
-          <Link 
-            href={parseInt(episode) > 1 ? `/ver/${slug}/${parseInt(episode) - 1}` : '#'}
-            className={`font-semibold  ${parseInt(episode) > 1 ? 'text-gray-300 hover:text-white' : 'text-gray-700 cursor-not-allowed pointer-events-none'}`}
-          >
-            &laquo; Episodio Anterior
-          </Link>
+          <div className="flex-1">
+            <Link 
+              href={parsedEpisode > 1 ? `/ver/${slug}/${parsedEpisode - 1}` : '#'}
+              className={`inline-block font-semibold ${parsedEpisode > 1 ? 'text-gray-300 hover:text-white' : 'text-gray-700 cursor-not-allowed pointer-events-none'}`}
+            >
+              &laquo; Episodio Anterior
+            </Link>
+          </div>
 
-          <Link 
-            href={`/anime/${slug}`}
-            className="px-6 py-2 bg-zinc-800 rounded-full text-sm font-semibold hover:bg-zinc-700 transition"
-          >
-            Lista de Episodios
-          </Link>
+          <div className="flex-shrink-0">
+            <Link 
+              href={`/anime/${slug}`}
+              className="px-6 py-2 bg-zinc-800 rounded-full text-sm font-semibold hover:bg-zinc-700 transition"
+            >
+              Lista de Episodios
+            </Link>
+          </div>
 
-          <Link 
-            href={`/ver/${slug}/${parseInt(episode) + 1}`}
-            className="font-semibold text-gray-300 hover:text-white"
-          >
-             Siguiente Episodio &raquo;
-          </Link>
+          <div className="flex-1 text-right">
+            {!isLastAvailableEpisode ? (
+              <Link 
+                href={`/ver/${slug}/${parsedEpisode + 1}`}
+                className="inline-block font-semibold text-gray-300 hover:text-white transition-colors"
+              >
+                 Siguiente Episodio &raquo;
+              </Link>
+            ) : (
+              animeData?.status === 'En emision' && animeData?.next_airing_episode ? (
+                <span className="inline-block text-sm font-medium text-zinc-400 bg-zinc-900 px-4 py-2 border border-zinc-800 rounded-full">
+                  Próximo ep: {animeData.next_airing_episode}
+                </span>
+              ) : null
+            )}
+          </div>
         </div>
       </div>
     </div>

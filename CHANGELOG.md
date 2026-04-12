@@ -2,6 +2,16 @@
 
 Todos los cambios notables en este proyecto serán documentados en este archivo. El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto sigue el [Versionado Semántico](https://semver.org/lang/es/).
 
+## [1.3.2] - 2026-04-12
+### Añadido
+- 📱 **Visibilidad Móvil**: Los nombres de los animes y sus etiquetas ahora son siempre visibles en móvil con un degradado inferior, eliminando la dependencia del "hover" inexistente en estos dispositivos.
+- ⏭️ **Control de Navegación**: El botón "Siguiente Episodio" se oculta automáticamente en animes "Finalizados" al llegar al último capítulo.
+- 📅 **Info de Emisión**: Muestra la fecha del próximo estreno directamente en el reproductor para animes "En Emisión" al alcanzar el episodio más reciente.
+
+### Corregido
+- 🔗 **Relleno de Historial**: Al marcar un episodio como "Visto" manualmente, ahora se crean/actualizan automáticamente todos los episodios anteriores como "Vistos", incluso si el usuario nunca los había abierto.
+
+
 ## [1.3.1] - 2026-04-08
 ### Añadido
 - ⏯️ **Reanudación Inteligente**: El botón "Ver Ep." en la página de detalles ahora sugiere automáticamente el menor episodio en estado "Viendo" o el menor "Pendiente", facilitando el seguimiento de series largas.

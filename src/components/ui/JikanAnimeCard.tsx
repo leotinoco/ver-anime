@@ -37,14 +37,28 @@ export default function JikanAnimeCard({ slug, title, cover, type }: JikanAnimeC
               loading="lazy"
             />
             
-            {/* Background Shade on Hover */}
-            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            {/* Background Shade on Hover (desktop only) */}
+            <div className="absolute inset-0 bg-black/60 opacity-0 md:group-hover:opacity-100 transition-opacity duration-300" />
           </motion.div>
         </Link>
       </div>
 
-      {/* Floating UI Layer (NOT clipped) */}
-      <div className="absolute inset-0 z-20 flex flex-col justify-end p-3 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+      {/* Título siempre visible en móvil (gradiente inferior) */}
+      <div className="absolute inset-x-0 bottom-0 z-20 pointer-events-none md:hidden">
+        <div className="rounded-b-md bg-gradient-to-t from-black/85 via-black/40 to-transparent px-2 pt-6 pb-2">
+          <h3 className="text-white font-bold text-xs line-clamp-2 drop-shadow-md">
+            {title}
+          </h3>
+          {!hasLocalSlug && (
+            <span className="inline-block mt-1 px-1.5 py-0.5 bg-yellow-500/20 border border-yellow-500/40 rounded text-yellow-300 text-[9px] font-bold">
+              Buscar en catálogo
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Floating UI Layer — solo visible en desktop al hacer hover */}
+      <div className="absolute inset-0 z-20 flex flex-col justify-end p-3 pointer-events-none opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 hidden md:flex">
         <div className="mb-1">
           <h3 className="text-white font-bold text-xs md:text-sm line-clamp-2 mb-2 drop-shadow-md">
             {title}

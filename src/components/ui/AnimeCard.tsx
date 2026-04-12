@@ -37,14 +37,37 @@ export default function AnimeCard({ slug, title, cover, type, episodeNumber }: A
               loading="lazy"
             />
             
-            {/* Background Shade on Hover */}
-            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            {/* Background Shade on Hover (desktop only) */}
+            <div className="absolute inset-0 bg-black/60 opacity-0 md:group-hover:opacity-100 transition-opacity duration-300" />
           </motion.div>
         </Link>
       </div>
 
-      {/* Floating UI Layer (NOT clipped) */}
-      <div className="absolute inset-0 z-20 flex flex-col justify-end p-4 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+      {/* Título siempre visible en móvil (gradiente inferior) */}
+      <div className="absolute inset-x-0 bottom-0 z-20 pointer-events-none md:hidden">
+        <div className="rounded-b-md bg-gradient-to-t from-black/85 via-black/40 to-transparent px-2 pt-6 pb-2">
+          <h3 className="text-white font-bold text-xs line-clamp-2 drop-shadow-md">
+            {title}
+          </h3>
+          {(type || episodeNumber) && (
+            <div className="flex items-center flex-wrap gap-1 mt-1 text-[10px] font-bold">
+              {type && (
+                <span className="px-1.5 py-0.5 bg-white/20 backdrop-blur-md border border-white/30 rounded text-white uppercase tracking-tighter">
+                  {type}
+                </span>
+              )}
+              {episodeNumber && (
+                <span className="px-1.5 py-0.5 bg-primary/90 border border-primary text-white rounded">
+                  Ep. {episodeNumber}
+                </span>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Floating UI Layer — solo visible en desktop al hacer hover */}
+      <div className="absolute inset-0 z-20 flex flex-col justify-end p-4 pointer-events-none opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 hidden md:flex">
         <div className="mb-2">
           <h3 className="text-white font-bold text-sm md:text-base line-clamp-2 mb-2 drop-shadow-md">
             {title}

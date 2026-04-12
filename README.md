@@ -18,7 +18,7 @@ Una plataforma de streaming de anime moderna y fluida, inspirada en la interfaz 
 - **🔔 Notificaciones:** Recibe alertas de nuevos episodios de los animes en tus listas.
 - **▶️ Estado de Episodios:** Marca cada episodio como Pendiente, Viendo o Visto, por usuario.
 - **🔍 Búsqueda Avanzada:** Encuentra cualquier anime instantáneamente con el motor de búsqueda integrado.
-- **📱 100% Responsivo:** Disfruta de la plataforma en tu móvil, tablet o PC sin perder el estilo.
+- **📱 Experiencia Mobile-First:** Interfaz optimizada para móviles con títulos siempre visibles (sin hover) y navegación adaptada para pantallas táctiles.
 - **🛡️ Seguridad Reforzada:** Protección contra vulnerabilidades comunes y navegación privada.
 
 ## 🚀 Tecnologías Usadas
