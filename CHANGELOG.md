@@ -9,6 +9,8 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 - 🧹 **Hardening de errores en login**: Se redujo la exposición de detalles internos en respuestas de error y logs del flujo de autenticación.
 - 👤 **Seed administrativo seguro**: El script de creación de admin ya no usa credenciales por defecto; requiere variables `ADMIN_USERNAME`, `ADMIN_EMAIL` y `ADMIN_PASSWORD`.
 - 📝 **Prevención de fuga accidental**: Se enmascara la URI de conexión en utilidades temporales de diagnóstico y se ignora `tmp/` en control de versiones.
+- 🧩 **Build en Vercel**: Se corrigió el tipado de `bulkWrite` en el endpoint de progreso para evitar fallos de compilación por incompatibilidad de overloads.
+- 📦 **Lockfile reproducible**: Se añadió `pnpm-lock.yaml` para fijar resoluciones de dependencias y facilitar auditorías/CI consistentes.
 
 ## [1.3.2] - 2026-04-12
 ### Añadido
