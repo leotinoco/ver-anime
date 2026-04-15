@@ -2,6 +2,14 @@
 
 Todos los cambios notables en este proyecto serán documentados en este archivo. El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto sigue el [Versionado Semántico](https://semver.org/lang/es/).
 
+## [1.3.3] - 2026-04-15
+### Corregido
+- 🔐 **Seguridad de autenticación**: Se eliminó el secreto JWT por defecto y ahora `JWT_SECRET` es obligatorio para iniciar la aplicación.
+- 🛡️ **Endpoint de tracking protegido**: `POST /api/push/track` ahora exige sesión válida y restringe actualizaciones de métricas al `userId` propietario.
+- 🧹 **Hardening de errores en login**: Se redujo la exposición de detalles internos en respuestas de error y logs del flujo de autenticación.
+- 👤 **Seed administrativo seguro**: El script de creación de admin ya no usa credenciales por defecto; requiere variables `ADMIN_USERNAME`, `ADMIN_EMAIL` y `ADMIN_PASSWORD`.
+- 📝 **Prevención de fuga accidental**: Se enmascara la URI de conexión en utilidades temporales de diagnóstico y se ignora `tmp/` en control de versiones.
+
 ## [1.3.2] - 2026-04-12
 ### Añadido
 - 📱 **Visibilidad Móvil**: Los nombres de los animes y sus etiquetas ahora son siempre visibles en móvil con un degradado inferior, eliminando la dependencia del "hover" inexistente en estos dispositivos.
