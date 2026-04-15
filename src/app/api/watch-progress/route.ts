@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { decrypt } from "@/lib/auth";
 import connectDB from "@/lib/mongoose";
-import { WatchProgress, EpisodeStatus } from "@/models/WatchProgress";
-import mongoose from "mongoose";
+import {
+  WatchProgress,
+  type EpisodeStatus,
+  type IWatchProgress,
+} from "@/models/WatchProgress";
+import mongoose, { type AnyBulkWriteOperation } from "mongoose";
 
 async function getAuthUser(req: NextRequest) {
   const session = req.cookies.get("session")?.value;
@@ -55,7 +59,8 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const { animeSlug, episodeNumber, status, source, seriesId, seasonId } = body;
 
-  if (!animeSlug || episodeNumber === undefined || !status) {
+  const animeSlugStr = typeof animeSlug === "string" ? animeSlug : null;
+  if (!animeSlugStr || episodeNumber === undefined || !status) {
     return NextResponse.json(
       { error: "animeSlug, episodeNumber and status are required" },
       { status: 400 },
@@ -66,6 +71,7 @@ export async function POST(req: NextRequest) {
   if (!validStatuses.includes(status)) {
     return NextResponse.json({ error: "Invalid status" }, { status: 400 });
   }
+  const statusValue = status as EpisodeStatus;
 
   await connectDB();
 
@@ -82,12 +88,18 @@ export async function POST(req: NextRequest) {
   const resolvedSeriesId =
     typeof seriesId === "string" && seriesId.trim()
       ? seriesId.trim()
-      : String(animeSlug);
+      : animeSlugStr;
   const resolvedSeasonId =
     typeof seasonId === "string" && seasonId.trim()
       ? seasonId.trim()
-      : String(animeSlug);
+      : animeSlugStr;
   const episodeNum = Number(episodeNumber);
+  if (!Number.isFinite(episodeNum) || episodeNum <= 0) {
+    return NextResponse.json(
+      { error: "Invalid episodeNumber" },
+      { status: 400 },
+    );
+  }
 
   const startedAt = Date.now();
   let attempt = 0;
@@ -106,17 +118,21 @@ export async function POST(req: NextRequest) {
         const now = new Date();
 
         await WatchProgress.findOneAndUpdate(
-          { userId: payload.userId, animeSlug, episodeNumber: episodeNum },
+          {
+            userId: payload.userId,
+            animeSlug: animeSlugStr,
+            episodeNumber: episodeNum,
+          },
           {
             $set: {
-              status,
+              status: statusValue,
               watchedAt: now,
               seriesId: resolvedSeriesId,
               seasonId: resolvedSeasonId,
             },
             $setOnInsert: {
               userId: payload.userId,
-              animeSlug,
+              animeSlug: animeSlugStr,
               episodeNumber: episodeNum,
             },
           },
@@ -124,14 +140,14 @@ export async function POST(req: NextRequest) {
         );
 
         const shouldAutoMarkPrevious =
-          normalizedSource === "manual" && status === "visto";
+          normalizedSource === "manual" && statusValue === "visto";
         if (!shouldAutoMarkPrevious) return;
 
         // Buscamos cualquier episodio anterior para validar series/season y saber su estado actual
         const previous = await WatchProgress.find(
           {
             userId: payload.userId,
-            animeSlug,
+            animeSlug: animeSlugStr,
             episodeNumber: { $lt: episodeNum },
           },
           { episodeNumber: 1, status: 1, seriesId: 1, seasonId: 1, _id: 0 },
@@ -166,13 +182,17 @@ export async function POST(req: NextRequest) {
           }
         }
 
-        const bulkOps = [];
+        const bulkOps: AnyBulkWriteOperation<IWatchProgress>[] = [];
         for (let i = 1; i < episodeNum; i++) {
           const currentStatus = existingMap.get(i);
           if (currentStatus !== "visto") {
             bulkOps.push({
               updateOne: {
-                filter: { userId: payload.userId, animeSlug, episodeNumber: i },
+                filter: {
+                  userId: payload.userId,
+                  animeSlug: animeSlugStr,
+                  episodeNumber: i,
+                },
                 update: {
                   $set: {
                     status: "visto",
@@ -182,7 +202,7 @@ export async function POST(req: NextRequest) {
                   },
                   $setOnInsert: {
                     userId: payload.userId,
-                    animeSlug,
+                    animeSlug: animeSlugStr,
                     episodeNumber: i,
                   },
                 },
@@ -208,11 +228,11 @@ export async function POST(req: NextRequest) {
         event: "watch_progress_update",
         source: normalizedSource || "unknown",
         userId: payload.userId,
-        animeSlug,
+        animeSlug: animeSlugStr,
         seriesId: resolvedSeriesId,
         seasonId: resolvedSeasonId,
         episodeNumber: episodeNum,
-        status,
+        status: statusValue,
         updatedPrevious,
         elapsedMs,
       };

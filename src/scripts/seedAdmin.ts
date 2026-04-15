@@ -1,28 +1,35 @@
-import 'dotenv/config'; // Used for the script execution context
-import mongoose from 'mongoose';
-import bcrypt from 'bcryptjs';
-import { User } from '../models/User';
+import "dotenv/config"; // Used for the script execution context
+import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
+import { User } from "../models/User";
 
 const MONGODB_URI = process.env.DATABASE_URL;
 
 if (!MONGODB_URI) {
-  console.error('DATABASE_URL must be defined');
+  console.error("DATABASE_URL must be defined");
   process.exit(1);
 }
 
 async function seedAdmin() {
   try {
     await mongoose.connect(MONGODB_URI as string);
-    console.log('Connected to Database');
+    console.log("Connected to Database");
 
-    const adminUsername = process.env.ADMIN_USERNAME || 'admin';
-    const adminEmail = process.env.ADMIN_EMAIL || 'admin@Anime Fan.local';
-    const adminPassword = process.env.ADMIN_PASSWORD || '123456';
+    const adminUsername = process.env.ADMIN_USERNAME;
+    const adminEmail = process.env.ADMIN_EMAIL;
+    const adminPassword = process.env.ADMIN_PASSWORD;
+
+    if (!adminUsername || !adminEmail || !adminPassword) {
+      console.error(
+        "ADMIN_USERNAME, ADMIN_EMAIL and ADMIN_PASSWORD must be defined",
+      );
+      process.exit(1);
+    }
 
     const existingAdmin = await User.findOne({ username: adminUsername });
 
     if (existingAdmin) {
-      console.log('Admin user already exists. Skipping seed.');
+      console.log("Admin user already exists. Skipping seed.");
       process.exit(0);
     }
 
@@ -33,16 +40,18 @@ async function seedAdmin() {
       username: adminUsername,
       email: adminEmail,
       passwordHash,
-      role: 'admin',
-      createdBy: 'system', // the original seed is created by the system
+      role: "admin",
+      createdBy: "system", // the original seed is created by the system
     });
 
     await newAdmin.save();
-    console.log(`Admin user created successfully: ${adminUsername} / ${adminEmail}`);
+    console.log(
+      `Admin user created successfully: ${adminUsername} / ${adminEmail}`,
+    );
 
     process.exit(0);
   } catch (error) {
-    console.error('Error seeding admin user:', error);
+    console.error("Error seeding admin user:", error);
     process.exit(1);
   }
 }
