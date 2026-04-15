@@ -2,6 +2,16 @@
 
 Todos los cambios notables en este proyecto serán documentados en este archivo. El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto sigue el [Versionado Semántico](https://semver.org/lang/es/).
 
+## [1.3.4] - 2026-04-15
+### Corregido
+- 🧾 **Creación de listas**: Se restauró el recuadro interactivo para crear nuevas listas desde “Mis Listas”, con validación, manejo de errores y refresco de la vista tras crearla. ([commit 9bc8931](https://github.com/leotinoco/ver-anime/commit/9bc8931))
+
+### Documentación
+- 📚 **Documentación sincronizada**: Se actualizan `CHANGELOG.md` y `README.md` para reflejar cambios recientes y el proceso de release.
+
+### Enlaces
+- Comparación: [v1.3.3…v1.3.4](https://github.com/leotinoco/ver-anime/compare/v1.3.3...v1.3.4)
+
 ## [1.3.3] - 2026-04-15
 ### Corregido
 - 🔐 **Seguridad de autenticación**: Se eliminó el secreto JWT por defecto y ahora `JWT_SECRET` es obligatorio para iniciar la aplicación.

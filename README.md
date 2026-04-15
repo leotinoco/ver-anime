@@ -15,7 +15,7 @@ Una plataforma de streaming de anime moderna y fluida, inspirada en la interfaz 
 - **🖼️ Carrusel de Portada (Hero):** Destacados dinámicos con las mejores obras maestras (La Tumba de las Luciérnagas, El Viaje de Chihiro, Cowboy Bebop y Monster).
 - **⭐ Integración con MyAnimeList:** Sección de "Mejor Calificados" consumiendo la API de Jikan, con mapeo inteligente al catálogo local.
 - **📚 Gestión de Listas:** Crea tus propias listas personalizadas y guarda tus animes favoritos sin complicaciones.
-- **🔔 Notificaciones:** Recibe alertas de nuevos episodios de los animes en tus listas.
+- **🔔 Notificaciones:** Notificaciones in-app y (opcional) notificaciones push con deep links.
 - **▶️ Estado de Episodios:** Marca cada episodio como Pendiente, Viendo o Visto, por usuario.
 - **🔍 Búsqueda Avanzada:** Encuentra cualquier anime instantáneamente con el motor de búsqueda integrado.
 - **📱 Experiencia Mobile-First:** Interfaz optimizada para móviles con títulos siempre visibles (sin hover) y navegación adaptada para pantallas táctiles.
@@ -23,7 +23,7 @@ Una plataforma de streaming de anime moderna y fluida, inspirada en la interfaz 
 
 ## 🚀 Tecnologías Usadas
 
-- **Core:** [Next.js 15+](https://nextjs.org/) (App Router)
+- **Core:** [Next.js 16](https://nextjs.org/) (App Router)
 - **Lenguaje:** [TypeScript](https://www.typescriptlang.org/)
 - **Estilos:** [Tailwind CSS](https://tailwindcss.com/)
 - **Animaciones:** [Framer Motion](https://www.framer.com/motion/)
@@ -37,10 +37,14 @@ Una plataforma de streaming de anime moderna y fluida, inspirada en la interfaz 
 # 1. Clonar el repositorio
 git clone https://github.com/leotinoco/ver-anime.git
 
-# 2. Instalar dependencias
-npm install
+# 1.1 Entrar al proyecto
+cd ver-anime
 
-# 3. Configurar variables de entorno (.env)
+# 2. Instalar dependencias
+pnpm install --ignore-scripts
+
+# 3. Configurar variables de entorno (.env.local)
+# Copia .env.example a .env.local y completa los valores
 DATABASE_URL=tu_mongodb_url
 JWT_SECRET=tu_secreto_super_seguro
 NEXT_PUBLIC_API_BASE=https://animeflv.ahmedrangel.com/api
@@ -52,12 +56,29 @@ VAPID_SUBJECT=mailto:tu_correo@dominio.com
 PUSH_DISPATCH_SECRET=tu_secreto_para_dispatch
 
 # 4. Iniciar en desarrollo
-npm run dev
+pnpm dev
 ```
+
+## 🔔 Notificaciones Push (opcional)
+
+El proyecto soporta Web Push vía Service Worker (`public/sw.js`). Para enviar notificaciones se requiere:
+
+- Configurar variables VAPID y `PUSH_DISPATCH_SECRET` en el entorno.
+- Ejecutar un job/cron externo que invoque `POST /api/push/dispatch` con header `Authorization: Bearer <PUSH_DISPATCH_SECRET>`.
+
+Preferencias por usuario:
+
+- `/notificaciones` permite activar/desactivar el permiso del navegador y habilitar/deshabilitar cada tipo de notificación.
 
 ## 🔒 Privacidad y SEO
 
 Este proyecto se ha configurado para ser exclusivo de sus usuarios. Se ha implementado un bloqueo estricto de indexación en buscadores (`robots.txt`) y cabeceras de seguridad avanzadas en `vercel.json` y `.htaccess`.
+
+## 🤝 Contribuir
+
+- Abre un issue con pasos de reproducción claros y capturas/logs cuando sea posible.
+- Para cambios grandes, propone primero el enfoque en un issue antes de abrir PR.
+- Mantén mensajes de commit en español y descriptivos.
 
 ## 🐛 Reportar un Error
 
