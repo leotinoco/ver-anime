@@ -137,10 +137,10 @@ export default function AddToListButton({ slug, title, cover, variant = 'circle'
       <AnimatePresence>
         {showDropdown && (
           <motion.div 
-            initial={{ opacity: 0, scale: 0.9, y: variant === 'circle' ? 10 : -10 }}
+            initial={{ opacity: 0, scale: 0.9, y: variant === 'circle' ? -10 : 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: variant === 'circle' ? 10 : -10 }}
-            className={`absolute ${variant === 'circle' ? 'bottom-10 right-0' : 'top-14 right-0'} w-56 max-w-[min(14rem,90vw)] bg-zinc-900 border border-zinc-800 rounded-lg shadow-2xl z-[100] p-2 overflow-visible`}
+            exit={{ opacity: 0, scale: 0.9, y: variant === 'circle' ? -10 : 10 }}
+            className={`absolute ${variant === 'circle' ? 'bottom-full mb-3 right-0' : 'top-full mt-3 right-0'} w-56 max-w-[min(14rem,90vw)] bg-zinc-900 border border-zinc-800 rounded-lg shadow-2xl z-[100] p-2 overflow-visible`}
           >
             <div className="px-2 py-1.5 border-b border-zinc-800 mb-1 flex items-center gap-2 text-primary font-bold text-[10px] uppercase tracking-wider">
                <ListPlus size={12} /> Añadir a lista
@@ -175,27 +175,33 @@ export default function AddToListButton({ slug, title, cover, variant = 'circle'
             )}
 
             {/* Create New List Form */}
-            {lists.length < 3 && (
-              <div className="mt-1 pt-2 border-t border-zinc-800 p-1">
-                <div className="flex gap-1">
-                  <input 
-                    type="text"
-                    value={newListName}
-                    onChange={(e) => setNewListName(e.target.value)}
-                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                    placeholder="Nueva lista..."
-                    className="flex-1 bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-[11px] focus:outline-none focus:border-primary text-white"
-                    maxLength={20}
-                  />
-                  <button 
-                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); createList(); }}
-                    disabled={creatingList || !newListName.trim()}
-                    className="bg-primary text-white p-1 rounded disabled:opacity-50 hover:bg-red-700 transition-colors"
-                  >
-                    {creatingList ? <Loader2 size={12} className="animate-spin" /> : <Plus size={12} />}
-                  </button>
+            {!loadingLists && (
+              lists.length < 3 ? (
+                <div className="mt-1 pt-2 border-t border-zinc-800 p-1">
+                  <div className="flex gap-1">
+                    <input 
+                      type="text"
+                      value={newListName}
+                      onChange={(e) => setNewListName(e.target.value)}
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                      placeholder="Nueva lista..."
+                      className="flex-1 bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-[11px] focus:outline-none focus:border-primary text-white"
+                      maxLength={20}
+                    />
+                    <button 
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); createList(); }}
+                      disabled={creatingList || !newListName.trim()}
+                      className="bg-primary text-white p-1 rounded disabled:opacity-50 hover:bg-red-700 transition-colors"
+                    >
+                      {creatingList ? <Loader2 size={12} className="animate-spin" /> : <Plus size={12} />}
+                    </button>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="mt-1 pt-2 border-t border-zinc-800 p-1 text-center">
+                  <p className="text-[9px] text-yellow-500 font-bold uppercase tracking-tighter">Límite de 3 listas alcanzado</p>
+                </div>
+              )
             )}
 
             {message && (
