@@ -39,3 +39,32 @@ export async function PATCH(
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 });
   }
 }
+
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+
+    const sessionCookie = req.cookies.get('session');
+    if (!sessionCookie) return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+
+    const payload = await decrypt(sessionCookie.value);
+    if (!payload) return NextResponse.json({ error: 'Sesión inválida' }, { status: 401 });
+
+    await connectDB();
+
+    const result = await FavoriteList.deleteOne({ _id: id, userId: payload.userId });
+
+    if (result.deletedCount === 0) {
+      return NextResponse.json({ error: 'Lista no encontrada o no tienes permisos' }, { status: 404 });
+    }
+
+    return NextResponse.json({ message: 'Lista eliminada' }, { status: 200 });
+
+  } catch (error) {
+    console.error('Delete list error:', error);
+    return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 });
+  }
+}

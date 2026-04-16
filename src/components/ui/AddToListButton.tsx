@@ -140,7 +140,7 @@ export default function AddToListButton({ slug, title, cover, variant = 'circle'
             initial={{ opacity: 0, scale: 0.9, y: variant === 'circle' ? 10 : -10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: variant === 'circle' ? 10 : -10 }}
-            className={`absolute ${variant === 'circle' ? 'bottom-10 right-0' : 'top-14 right-0'} w-56 max-w-[min(14rem,90vw)] bg-zinc-900 border border-zinc-800 rounded-lg shadow-2xl z-[100] p-2 overflow-hidden`}
+            className={`absolute ${variant === 'circle' ? 'bottom-10 right-0' : 'top-14 right-0'} w-56 max-w-[min(14rem,90vw)] bg-zinc-900 border border-zinc-800 rounded-lg shadow-2xl z-[100] p-2 overflow-visible`}
           >
             <div className="px-2 py-1.5 border-b border-zinc-800 mb-1 flex items-center gap-2 text-primary font-bold text-[10px] uppercase tracking-wider">
                <ListPlus size={12} /> Añadir a lista
