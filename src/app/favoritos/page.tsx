@@ -50,7 +50,7 @@ export default async function FavoritosPage() {
               <ListVideo className="w-8 h-8 text-primary" /> Mis Listas
             </h1>
             <p className="text-gray-400">
-              Organiza tus animes favoritos. Puedes crear hasta 3 listas
+              Organiza tus animes favoritos. Puedes crear hasta 10 listas
               personalizadas y arrastrar animes para moverlos entre ellas.
             </p>
           </div>

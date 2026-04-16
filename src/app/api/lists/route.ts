@@ -42,10 +42,10 @@ export async function POST(req: NextRequest) {
 
     await connectDB();
 
-    // Check if user already has 3 lists
+    // Check if user already has 10 lists
     const count = await FavoriteList.countDocuments({ userId: payload.userId });
-    if (count >= 3) {
-      return NextResponse.json({ error: 'Máximo 3 listas permitidas (Límite alcanzado)' }, { status: 400 });
+    if (count >= 10) {
+      return NextResponse.json({ error: 'Máximo 10 listas permitidas (Límite alcanzado)' }, { status: 400 });
     }
 
     const newList = await FavoriteList.create({

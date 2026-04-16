@@ -176,7 +176,7 @@ export default function AddToListButton({ slug, title, cover, variant = 'circle'
 
             {/* Create New List Form */}
             {!loadingLists && (
-              lists.length < 3 ? (
+              lists.length < 10 ? (
                 <div className="mt-1 pt-2 border-t border-zinc-800 p-1">
                   <div className="flex gap-1">
                     <input 
@@ -199,7 +199,7 @@ export default function AddToListButton({ slug, title, cover, variant = 'circle'
                 </div>
               ) : (
                 <div className="mt-1 pt-2 border-t border-zinc-800 p-1 text-center">
-                  <p className="text-[9px] text-yellow-500 font-bold uppercase tracking-tighter">Límite de 3 listas alcanzado</p>
+                  <p className="text-[9px] text-yellow-500 font-bold uppercase tracking-tighter">Límite de 10 listas alcanzado</p>
                 </div>
               )
             )}
