@@ -245,12 +245,14 @@ export default function RecommendedCarousel() {
           transition={isTransitioning ? { type: 'spring', damping: 30, stiffness: 150 } : { duration: 0 }}
         >
           {extendedAnimes.map((anime, index) => (
-            <div 
+            <Link 
               key={`${anime.id}-${index}`}
-              className="flex-shrink-0 select-none pb-4"
+              href={`/anime/${anime.slug}`}
+              className="flex-shrink-0 select-none pb-4 block"
               style={{ width: `calc(${100 / itemsPerView}% - ${(itemsPerView - 1) * 1.5}rem / ${itemsPerView})` }}
+              draggable="false"
             >
-              <div className="group/card relative aspect-[2/3] rounded-3xl overflow-hidden shadow-2xl transition-all duration-500 hover:scale-[1.03] hover:shadow-red-600/30 bg-zinc-900 border border-white/5">
+              <div className="group/card relative aspect-[2/3] rounded-3xl overflow-hidden shadow-2xl transition-all duration-500 md:hover:scale-[1.03] md:hover:shadow-red-600/30 bg-zinc-900 border border-white/5 h-full">
                 <img 
                   src={anime.image} 
                   alt={anime.title}
@@ -263,41 +265,38 @@ export default function RecommendedCarousel() {
                 
                 {/* Top Badge */}
                 <div className="absolute top-5 left-5 z-10">
-                  <div className="bg-red-600/95 backdrop-blur-md text-white text-xs font-black px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-2xl">
+                  <div className="bg-red-600/95 backdrop-blur-md text-white text-[10px] md:text-xs font-black px-2 py-1 md:px-3 md:py-1.5 rounded-lg flex items-center gap-1 md:gap-1.5 shadow-2xl">
                     <Star size={14} fill="currentColor" />
                     {anime.rating}
                   </div>
                 </div>
 
                 {/* Content */}
-                <div className="absolute bottom-0 left-0 right-0 p-8 z-20 translate-y-6 group-hover/card:translate-y-0 transition-transform duration-500">
-                  <div className="flex items-center gap-3 mb-3 text-zinc-300 text-xs font-bold uppercase tracking-widest bg-white/5 w-fit px-3 py-1 rounded-full border border-white/10">
+                <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8 z-20 translate-y-0 md:translate-y-6 group-hover/card:translate-y-0 transition-transform duration-500">
+                  <div className="flex items-center gap-2 md:gap-3 mb-2 md:mb-3 text-zinc-300 text-[10px] md:text-xs font-bold uppercase tracking-widest bg-white/5 w-fit px-2 py-1 md:px-3 rounded-full border border-white/10">
                     <span className="flex items-center gap-1.5">
                       <Calendar size={12} />
                       {anime.year}
                     </span>
                     <span className="w-1 h-1 bg-zinc-500 rounded-full"></span>
-                    <span>4K ULTRA HD</span>
+                    <span>4K</span>
                   </div>
                   
-                  <h3 className="text-2xl md:text-3xl font-black text-white mb-3 line-clamp-1 group-hover/card:text-red-500 transition-colors drop-shadow-lg">
+                  <h3 className="text-lg md:text-3xl font-black text-white mb-2 md:mb-3 line-clamp-1 group-hover/card:text-red-500 transition-colors drop-shadow-lg">
                     {anime.title}
                   </h3>
                   
-                  <p className="text-zinc-400 text-sm md:text-base line-clamp-2 opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 delay-100 leading-relaxed">
+                  <p className="text-zinc-400 text-xs md:text-base line-clamp-2 opacity-100 md:opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 delay-100 leading-relaxed hidden sm:block">
                     {anime.description}
                   </p>
                   
-                  <Link 
-                    href={`/anime/${anime.slug}`}
-                    className="mt-8 w-full bg-white text-black text-sm md:text-base font-black py-4 rounded-xl opacity-0 group-hover/card:opacity-100 transition-all duration-500 translate-y-4 group-hover/card:translate-y-0 hover:bg-red-600 hover:text-white shadow-2xl transform active:scale-95 flex items-center justify-center gap-2"
-                  >
+                  <div className="mt-4 md:mt-8 w-full bg-white text-black text-xs md:text-base font-black py-3 md:py-4 rounded-xl opacity-100 md:opacity-0 group-hover/card:opacity-100 transition-all duration-500 translate-y-0 md:translate-y-4 group-hover/card:translate-y-0 hover:bg-neutral-200 shadow-2xl flex items-center justify-center gap-2">
                     VER AHORA
                     <ChevronRight size={20} />
-                  </Link>
+                  </div>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </motion.div>
       </div>
