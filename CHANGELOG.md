@@ -1,6 +1,12 @@
 # Changelog de Anime Fan
 
-Todos los cambios notables en este proyecto serán documentados en este archivo. El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y este proyecto sigue el [Versionado Semántico](https://semver.org/lang/es/).
+## [1.3.5] - 2026-04-20
+### Corregido
+- 🐛 **Slider Hero**: Corrección de desborde horizontal en móviles mediante la ocultación de botones de navegación y optimización de responsividad.
+
+### Tareas
+- 🔧 **Gitignore**: Se agregó la carpeta `.agents` para evitar el rastreo de archivos generados por herramientas de IA.
+
 
 ## [1.3.4] - 2026-04-15
 ### Corregido
