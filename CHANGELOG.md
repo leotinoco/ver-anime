@@ -1,5 +1,14 @@
 # Changelog de Anime Fan
 
+## [1.3.6] - 2026-04-20
+### Añadido
+- 📱 **Dual-View Móvil**: Implementación de vista de 2 columnas para el slider hero en dispositivos móviles.
+
+### Corregido
+- 🎮 **Control Táctil**: Optimización de transiciones y eliminación de inercia en el scroll para mejorar el control del slider mediante gestos.
+- 📐 **Cálculo de Anchos**: Ajuste dinámico de dimensiones de tarjetas para evitar recortes visuales.
+
+
 ## [1.3.5] - 2026-04-20
 ### Corregido
 - 🐛 **Slider Hero**: Corrección de desborde horizontal en móviles mediante la ocultación de botones de navegación y optimización de responsividad.

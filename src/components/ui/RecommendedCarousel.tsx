@@ -140,7 +140,7 @@ export default function RecommendedCarousel() {
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 640) setItemsPerView(1);
+      if (window.innerWidth < 640) setItemsPerView(2);
       else if (window.innerWidth < 1024) setItemsPerView(2);
       else if (window.innerWidth < 1280) setItemsPerView(3);
       else setItemsPerView(4);
@@ -236,20 +236,22 @@ export default function RecommendedCarousel() {
 
       <div className="relative overflow-hidden group touch-pan-y" ref={containerRef}>
         <motion.div 
-          className="flex gap-4 md:gap-6 cursor-grab active:cursor-grabbing"
+          className="flex gap-3 md:gap-6 cursor-grab active:cursor-grabbing"
           drag="x"
           dragConstraints={containerRef}
+          dragElastic={0.1}
+          dragMomentum={false}
           onDragEnd={onDragEnd}
           animate={{ x: `-${(currentIndex * 100) / itemsPerView}%` }}
           onAnimationComplete={handleAnimationComplete}
-          transition={isTransitioning ? { type: 'spring', damping: 30, stiffness: 150 } : { duration: 0 }}
+          transition={isTransitioning ? { type: 'spring', damping: 35, stiffness: 200, mass: 0.8 } : { duration: 0 }}
         >
           {extendedAnimes.map((anime, index) => (
             <Link 
               key={`${anime.id}-${index}`}
               href={`/anime/${anime.slug}`}
               className="flex-shrink-0 select-none pb-4 block"
-              style={{ width: `calc(${100 / itemsPerView}% - ${(itemsPerView - 1) * 1.5}rem / ${itemsPerView})` }}
+              style={{ width: `calc(${100 / itemsPerView}% - ${(itemsPerView - 1) * (itemsPerView > 2 ? 1.5 : 0.75)}rem / ${itemsPerView})` }}
               draggable="false"
             >
               <div className="group/card relative aspect-[2/3] rounded-3xl overflow-hidden shadow-2xl transition-all duration-500 md:hover:scale-[1.03] md:hover:shadow-red-600/30 bg-zinc-900 border border-white/5 h-full">

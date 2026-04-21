@@ -3,6 +3,37 @@ import { Milestone, Rocket, ShieldCheck, Sparkles, Zap } from 'lucide-react';
 export default function ChangelogPage() {
   const updates = [
     {
+      version: 'v1.3.6',
+      date: '20 de Abril, 2026',
+      title: 'Optimización Hero y UX Móvil',
+      icon: <Sparkles className="text-yellow-400" />,
+      changes: [
+        '📱 Dual-View Móvil: Ahora se muestran 2 animes simultáneamente en el slider hero para una mejor densidad de contenido.',
+        '🎮 Control Táctil Mejorado: Ajuste de físicas y eliminación de inercia descontrolada para un desplazamiento más preciso.',
+        '📐 Precisión de Layout: Corrección de cálculos de ancho para evitar recortes de imágenes en pantallas pequeñas.'
+      ]
+    },
+    {
+      version: 'v1.3.5',
+      date: '20 de Abril, 2026',
+      title: 'Mantenimiento y Estabilidad',
+      icon: <ShieldCheck className="text-green-500" />,
+      changes: [
+        '🐛 Corrección de Desborde: Eliminación del scroll horizontal causado por los botones del slider en resoluciones móviles.',
+        '🔧 Optimización de Repositorio: Configuración de .gitignore para excluir carpetas de agentes inteligentes.'
+      ]
+    },
+    {
+      version: 'v1.3.4',
+      date: '19 de Abril, 2026',
+      title: 'Restauración de Funcionalidades',
+      icon: <Zap className="text-blue-400" />,
+      changes: [
+        '🧾 Listas Personalizadas: Se restauró la capacidad de crear nuevas listas desde el modal "Añadir a mi lista".',
+        '🔗 Sincronización de Persistencia: Mejoras en el refresco de UI tras la creación exitosa de una lista.'
+      ]
+    },
+    {
       version: 'v1.3.1',
       date: '08 de Abril, 2026',
       title: 'Mejoras de UX y Correcciones de UI',
