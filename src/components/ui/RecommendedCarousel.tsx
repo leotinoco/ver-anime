@@ -207,7 +207,7 @@ export default function RecommendedCarousel() {
 
   return (
     <div className="py-12 px-4 md:px-12 bg-gradient-to-b from-transparent to-[#141414]">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-8 gap-4">
         <div>
           <h2 className="text-3xl md:text-5xl font-bold text-white flex items-center gap-4">
             <span className="w-2 h-10 md:h-12 bg-red-600 rounded-full"></span>
@@ -216,7 +216,7 @@ export default function RecommendedCarousel() {
           <p className="text-zinc-400 text-base md:text-lg mt-3 ml-6 font-medium">Selección de algunas obras maestras</p>
         </div>
         
-        <div className="flex gap-3">
+        <div className="hidden md:flex gap-3 shrink-0">
           <button 
             onClick={prevSlide}
             className="p-3 bg-zinc-800/80 hover:bg-zinc-700 text-white rounded-full transition-all border border-zinc-700/50 backdrop-blur-sm shadow-xl active:scale-95"

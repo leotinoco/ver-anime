@@ -42,6 +42,7 @@ CLAUDE.md
 vercel_urls.txt
 *.avif.png
 tmp/
+.agents/
 
 # typescript
 *.tsbuildinfo
