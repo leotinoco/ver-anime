@@ -61,8 +61,7 @@ export async function POST(req: NextRequest) {
       name: "session",
       value: sessionString,
       httpOnly: true,
-      secure:
-        process.env.NODE_ENV === "production" || req.url.startsWith("https://"),
+      secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
       maxAge: 7 * 24 * 60 * 60, // 7 days

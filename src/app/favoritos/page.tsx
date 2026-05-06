@@ -16,12 +16,12 @@ export default async function FavoritosPage() {
   const sessionCookie = cookieStore.get("session");
 
   if (!sessionCookie) {
-    redirect("/login");
+    redirect("/login?redirect=/favoritos");
   }
 
   const payload = await decrypt(sessionCookie.value);
   if (!payload) {
-    redirect("/login");
+    redirect("/login?redirect=/favoritos");
   }
 
   // Fetch real data from MongoDB

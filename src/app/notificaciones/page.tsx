@@ -10,10 +10,10 @@ export const metadata = {
 export default async function NotificacionesPage() {
   const cookieStore = await cookies();
   const sessionCookie = cookieStore.get('session');
-  if (!sessionCookie) redirect('/login');
+  if (!sessionCookie) redirect('/login?redirect=/notificaciones');
 
   const payload = await decrypt(sessionCookie.value);
-  if (!payload) redirect('/login');
+  if (!payload) redirect('/login?redirect=/notificaciones');
 
   return (
     <div className="min-h-screen bg-[#141414] text-white pt-24 pb-12">
