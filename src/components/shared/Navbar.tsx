@@ -262,7 +262,7 @@ export default function Navbar() {
 
           {/* Bell / Notifications */}
           {user && (
-            <div className="relative hidden md:block" ref={notifRef}>
+            <div className="relative" ref={notifRef}>
               <button
                 aria-label="Notificaciones"
                 title="Notificaciones"
@@ -283,7 +283,7 @@ export default function Navbar() {
                     initial={{ opacity: 0, y: 8, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 8, scale: 0.95 }}
-                    className="absolute right-0 top-full mt-3 w-72 bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl z-[200] overflow-hidden"
+                    className="absolute right-0 top-full mt-3 w-[calc(100vw-2rem)] md:w-72 bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl z-[200] overflow-hidden"
                   >
                     <div className="px-4 py-3 border-b border-zinc-800 flex items-center justify-between">
                       <span className="text-white font-bold text-sm">
@@ -433,6 +433,17 @@ export default function Navbar() {
                   )}
                 </div>
               ))}
+              {/* Notifications link in mobile menu */}
+              {user && (
+                <Link
+                  href="/notificaciones"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="text-sm text-gray-400 flex items-center gap-2"
+                >
+                  <Bell className="w-4 h-4" />
+                  Notificaciones
+                </Link>
+              )}
             </nav>
           </motion.div>
         )}
