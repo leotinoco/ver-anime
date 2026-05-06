@@ -3,6 +3,19 @@ import { Milestone, Rocket, ShieldCheck, Sparkles, Zap } from 'lucide-react';
 export default function ChangelogPage() {
   const updates = [
     {
+      version: 'v1.3.7',
+      date: '06 de Mayo, 2026',
+      title: 'Notificaciones Móvil y Corrección de Sesión',
+      icon: <ShieldCheck className="text-green-500" />,
+      changes: [
+        '🔔 Notificaciones en Móvil: El ícono de campana ahora es visible en la barra de navegación de todos los dispositivos (antes estaba oculto en móvil).',
+        '📱 Panel Responsive: El panel de notificaciones se adapta al ancho de pantalla en móvil para evitar desbordamientos.',
+        '📋 Acceso rápido: Enlace a "Notificaciones" añadido al menú hamburguesa móvil.',
+        '🔐 Persistencia de Sesión: Corregido el bug que pedía credenciales al navegar entre páginas protegidas (/favoritos, /notificaciones).',
+        '🔗 Redirect inteligente: Tras el login, el usuario regresa automáticamente a la página que intentaba visitar.'
+      ]
+    },
+    {
       version: 'v1.3.6',
       date: '20 de Abril, 2026',
       title: 'Optimización Hero y UX Móvil',

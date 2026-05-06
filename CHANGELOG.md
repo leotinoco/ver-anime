@@ -1,12 +1,17 @@
 # Changelog de Anime Fan
 
-## [1.3.6] - 2026-04-20
+## [1.3.7] - 2026-05-06
+
 ### Añadido
-- 📱 **Dual-View Móvil**: Implementación de vista de 2 columnas para el slider hero en dispositivos móviles.
+
+- 🔔 **Notificaciones en Móvil**: El ícono de campana de notificaciones ahora es visible en la barra de navegación en todos los tamaños de pantalla (antes estaba oculto en móvil).
+- 📱 **Panel de notificaciones responsive**: El panel desplegable se adapta al ancho de la pantalla en dispositivos móviles (`calc(100vw - 2rem)`) evitando desbordamientos visuales.
+- 📋 **Acceso rápido en menú móvil**: Se añadió un enlace a "Notificaciones" dentro del menú hamburguesa para facilitar el acceso desde dispositivos móviles.
 
 ### Corregido
-- 🎮 **Control Táctil**: Optimización de transiciones y eliminación de inercia en el scroll para mejorar el control del slider mediante gestos.
-- 📐 **Cálculo de Anchos**: Ajuste dinámico de dimensiones de tarjetas para evitar recortes visuales.
+
+- 🔐 **Persistencia de sesión**: Se corrige el bug que pedía credenciales de nuevo al navegar a páginas protegidas (`/favoritos`, `/notificaciones`). La cookie de sesión ahora se configura correctamente usando `NODE_ENV === 'production'` en lugar de inspeccionar la URL interna del proxy de Vercel, que era poco fiable.
+- 🔗 **Redirect post-login**: Las páginas protegidas ahora redirigen a `/login?redirect=/ruta` para que tras el inicio de sesión el usuario regrese directamente a donde intentaba ir.
 
 
 ## [1.3.5] - 2026-04-20
