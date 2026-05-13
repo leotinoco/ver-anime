@@ -3,6 +3,19 @@ import { Milestone, Rocket, ShieldCheck, Sparkles, Zap } from 'lucide-react';
 export default function ChangelogPage() {
   const updates = [
     {
+      version: 'v1.3.8',
+      date: '13 de Mayo, 2026',
+      title: 'Limpieza de Código y Estabilidad',
+      icon: <ShieldCheck className="text-green-500" />,
+      changes: [
+        '🧹 Limpieza Profunda: Eliminación de variables e imports no utilizados en múltiples componentes y páginas.',
+        '🛡️ Manejo de Errores: Corrección de bloques catch con variables no usadas.',
+        '♿ Accesibilidad (a11y): Solución de problemas en la página de perfil (botones de avatar).',
+        '📝 Entidades Escapadas: Corrección de comillas en buscar y aviso legal.',
+        '📌 Estabilidad: Cambio de let a const en variables que no se reasignan.'
+      ]
+    },
+    {
       version: 'v1.3.7',
       date: '06 de Mayo, 2026',
       title: 'Notificaciones Móvil y Corrección de Sesión',
