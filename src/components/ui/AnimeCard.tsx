@@ -20,7 +20,7 @@ export default function AnimeCard({ slug, title, cover, type, episodeNumber }: A
   const finalHref = episodeNumber ? `/ver/${slug}/${episodeNumber}` : `/anime/${slug}`;
 
   return (
-    <div className="relative group w-[160px] md:w-[220px] flex-shrink-0 aspect-[2/3] cursor-pointer">
+    <div className="relative group w-full aspect-[2/3] cursor-pointer">
       {/* Container for the image (Clipped) */}
       <div className="relative w-full h-full rounded-md overflow-hidden shadow-lg border border-zinc-800">
         <Link href={finalHref} className="block w-full h-full">

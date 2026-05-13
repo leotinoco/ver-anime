@@ -34,6 +34,6 @@ const FavoriteListSchema = new Schema<IFavoriteList>({
 }, { timestamps: true });
 
 // Prevent duplicate logic using Mongoose pre save hook. 
-// A user should not have more than 3 lists. We'll handle this at the API route level as well, but can add validation here.
+// A user should not have more than 25 lists. We'll handle this at the API route level as well, but can add validation here.
 
 export const FavoriteList: Model<IFavoriteList> = mongoose.models.FavoriteList || mongoose.model<IFavoriteList>('FavoriteList', FavoriteListSchema);

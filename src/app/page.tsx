@@ -1,5 +1,5 @@
 import { getAnimesOnAir, getLatestEpisodes, getAnimeDetails } from '@/services/animeApi';
-import Carousel from '@/components/ui/Carousel';
+import AnimeGrid from '@/components/ui/AnimeGrid';
 import BraveBanner from '@/components/ui/BraveBanner';
 import RecommendedCarousel from '@/components/ui/RecommendedCarousel';
 
@@ -37,9 +37,9 @@ export default async function Home() {
         <RecommendedCarousel />
       </div>
       
-      <div className="space-y-8">
+      <div className="space-y-4">
         {latestEpisodes && latestEpisodes.length > 0 && (
-          <Carousel 
+          <AnimeGrid 
             title="Últimos Episodios" 
             items={latestEpisodes} 
             isEpisode={true}
@@ -47,7 +47,7 @@ export default async function Home() {
         )}
 
         {onAir && onAir.length > 0 && (
-          <Carousel 
+          <AnimeGrid 
             title="En Emisión y Tendencias" 
             items={onAir} 
           />

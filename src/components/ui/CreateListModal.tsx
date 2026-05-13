@@ -44,10 +44,10 @@ export default function CreateListModal({
   }, [open]);
 
   const openModal = () => {
-    if (currentListCount >= 10) {
+    if (currentListCount >= 25) {
       setMessage({
         type: "error",
-        text: "Máximo 10 listas permitidas (Límite alcanzado)",
+        text: "Máximo 25 listas permitidas (Límite alcanzado)",
       });
       setTimeout(() => setMessage(null), 2500);
       return;

@@ -58,14 +58,15 @@ export default function Carousel({ title, items, isEpisode = false }: CarouselPr
             const rawSlug = item.slug || '';
             const parsedSlug = isEpisode && item.number ? rawSlug.replace(new RegExp(`-${item.number}$`), '') : rawSlug;
             return (
-              <AnimeCard 
-                key={`${rawSlug}-${id}`}
-                slug={parsedSlug}
-                title={item.title || 'No Title'}
-                cover={item.cover}
-                type={item.type}
-                episodeNumber={isEpisode ? item.number : undefined}
-              />
+              <div key={`${rawSlug}-${id}`} className="w-[160px] md:w-[220px] flex-shrink-0">
+                <AnimeCard 
+                  slug={parsedSlug}
+                  title={item.title || 'No Title'}
+                  cover={item.cover}
+                  type={item.type}
+                  episodeNumber={isEpisode ? item.number : undefined}
+                />
+              </div>
             );
           })}
         </div>

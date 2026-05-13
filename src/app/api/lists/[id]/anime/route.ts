@@ -28,6 +28,11 @@ export async function POST(
       return NextResponse.json({ error: 'Lista no encontrada o no autorizada' }, { status: 404 });
     }
 
+    // Check max animes per list
+    if (list.animes.length >= 25) {
+      return NextResponse.json({ error: 'Máximo 25 animes por lista (Límite alcanzado)' }, { status: 400 });
+    }
+
     // Check for duplicates
     const alreadyExists = list.animes.some((a) => a.slug === slug);
     if (alreadyExists) {
