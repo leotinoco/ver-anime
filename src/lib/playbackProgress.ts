@@ -2,12 +2,12 @@ export type EpisodeStatus = "pendiente" | "viendo" | "visto";
 
 export const AUTO_TO_VIENDO_MS = 10 * 60 * 1000;
 export const AUTO_TO_VISTO_AFTER_VIENDO_MS = 15 * 60 * 1000;
-export const PLAYBACK_PERSIST_EVERY_MS = 30 * 1000;
 
-export type PlaybackProgressVersion = 1;
+const PLAYBACK_PERSIST_EVERY_MS = 30 * 1000;
+const MAX_TICK_DELTA_MS = 5000;
 
 export interface PlaybackProgressSnapshot {
-  version: PlaybackProgressVersion;
+  version: 1;
   animeSlug: string;
   episodeNumber: number;
   status: EpisodeStatus;
@@ -16,62 +16,62 @@ export interface PlaybackProgressSnapshot {
   savedAtMs: number;
 }
 
-export function makeStorageKey(animeSlug: string, episodeNumber: number) {
-  return `playback-progress:v1:${animeSlug}:${episodeNumber}`;
-}
+export const makeStorageKey = (animeSlug: string, episodeNumber: number) =>
+  `playback-progress:v1:${animeSlug}:${episodeNumber}`;
 
-export function createInitialSnapshot(params: {
+export const createInitialSnapshot = (params: {
   animeSlug: string;
   episodeNumber: number;
   initialStatus: EpisodeStatus;
-}): PlaybackProgressSnapshot {
-  return {
-    version: 1,
-    animeSlug: params.animeSlug,
-    episodeNumber: params.episodeNumber,
-    status: params.initialStatus,
-    accumulatedMs: 0,
-    reachedViendoAtAccumulatedMs:
-      params.initialStatus === "viendo"
+}): PlaybackProgressSnapshot => ({
+  version: 1,
+  animeSlug: params.animeSlug,
+  episodeNumber: params.episodeNumber,
+  status: params.initialStatus,
+  accumulatedMs: 0,
+  reachedViendoAtAccumulatedMs:
+    params.initialStatus === "viendo"
+      ? 0
+      : params.initialStatus === "visto"
         ? 0
-        : params.initialStatus === "visto"
-          ? 0
-          : null,
-    savedAtMs: Date.now(),
-  };
-}
+        : null,
+  savedAtMs: Date.now(),
+});
 
-export function sanitizeLoadedSnapshot(
+const isValidEpisodeStatus = (value: unknown): value is EpisodeStatus =>
+  value === "pendiente" || value === "viendo" || value === "visto";
+
+const isFinitePositive = (value: unknown): value is number =>
+  typeof value === "number" && Number.isFinite(value) && value >= 0;
+
+export const sanitizeLoadedSnapshot = (
   raw: unknown,
   expected: {
     animeSlug: string;
     episodeNumber: number;
     fallbackStatus: EpisodeStatus;
   },
-): PlaybackProgressSnapshot | null {
+): PlaybackProgressSnapshot | null => {
   if (!raw || typeof raw !== "object") return null;
+
   const r = raw as Record<string, unknown>;
   if (r.version !== 1) return null;
   if (r.animeSlug !== expected.animeSlug) return null;
   if (r.episodeNumber !== expected.episodeNumber) return null;
-  const status: EpisodeStatus =
-    r.status === "pendiente" || r.status === "viendo" || r.status === "visto"
-      ? r.status
-      : expected.fallbackStatus;
-  const accumulatedMs =
-    typeof r.accumulatedMs === "number" &&
-    Number.isFinite(r.accumulatedMs) &&
-    r.accumulatedMs >= 0
-      ? r.accumulatedMs
-      : 0;
+
+  const status: EpisodeStatus = isValidEpisodeStatus(r.status)
+    ? r.status
+    : expected.fallbackStatus;
+
+  const accumulatedMs = isFinitePositive(r.accumulatedMs) ? r.accumulatedMs : 0;
+
   const reached =
     r.reachedViendoAtAccumulatedMs === null
       ? null
-      : typeof r.reachedViendoAtAccumulatedMs === "number" &&
-          Number.isFinite(r.reachedViendoAtAccumulatedMs) &&
-          r.reachedViendoAtAccumulatedMs >= 0
+      : isFinitePositive(r.reachedViendoAtAccumulatedMs)
         ? r.reachedViendoAtAccumulatedMs
         : null;
+
   const savedAtMs =
     typeof r.savedAtMs === "number" && Number.isFinite(r.savedAtMs)
       ? r.savedAtMs
@@ -87,16 +87,16 @@ export function sanitizeLoadedSnapshot(
       status === "pendiente" ? null : (reached ?? 0),
     savedAtMs,
   };
-}
+};
 
-export function applyPlaybackTick(
+export const applyPlaybackTick = (
   snapshot: PlaybackProgressSnapshot,
   params: { deltaMs: number; isPlaying: boolean },
-): { snapshot: PlaybackProgressSnapshot; transition: EpisodeStatus | null } {
+): { snapshot: PlaybackProgressSnapshot; transition: EpisodeStatus | null } => {
   if (snapshot.status === "visto") return { snapshot, transition: null };
 
   const deltaMs = Number.isFinite(params.deltaMs) ? params.deltaMs : 0;
-  const clampedDeltaMs = Math.max(0, Math.min(deltaMs, 5000));
+  const clampedDeltaMs = Math.max(0, Math.min(deltaMs, MAX_TICK_DELTA_MS));
   if (!params.isPlaying || clampedDeltaMs === 0) {
     return { snapshot, transition: null };
   }
@@ -137,9 +137,9 @@ export function applyPlaybackTick(
     },
     transition: "visto",
   };
-}
+};
 
-export function shouldPersist(nowMs: number, lastPersistedAtMs: number | null) {
+export const shouldPersist = (nowMs: number, lastPersistedAtMs: number | null) => {
   if (lastPersistedAtMs === null) return true;
   return nowMs - lastPersistedAtMs >= PLAYBACK_PERSIST_EVERY_MS;
-}
+};

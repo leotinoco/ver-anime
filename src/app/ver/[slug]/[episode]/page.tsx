@@ -32,8 +32,6 @@ export default async function WatchPage({ params }: { params: Promise<{ slug: st
     notFound();
   }
 
-  const title = episodeData.title || (animeData?.title ? `${animeData.title} - Episodio ${episode}` : `Episodio ${episode}`);
-
   const parsedEpisode = parseInt(episode);
   const maxEpisode = animeData?.episodes && animeData.episodes.length > 0
     ? Math.max(...animeData.episodes.map((e: any) => e.number))
@@ -62,7 +60,7 @@ export default async function WatchPage({ params }: { params: Promise<{ slug: st
         }
       }
     }
-  } catch (e) {
+  } catch {
     // Not authenticated - silently skip
   }
 

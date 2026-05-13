@@ -32,14 +32,14 @@ export default function LegalPage() {
               Declaramos expresamente que <strong>Anime Fan no almacena, no aloja, no procesa y no transmite en sus propios servidores ningún archivo de video, material protegido por derechos de autor o propiedad intelectual (PI).</strong>
             </p>
             <p>
-              Toda la información consultada en esta pantalla fluye pura y exclusivamente en el lado del cliente (Navegador) a través del consumo pasivo de la <a href="https://animeflv.ahmedrangel.com/api" target="_blank" rel="noreferrer noopener" className="text-primary hover:underline font-bold">API no oficial externa de AnimeFLV</a>. Los reproductores de video incrustados ("iframes") y sus enlaces de redirección externos corresponden única y exclusivamente a servidores públicos de terceros (como MEGA o Fembed) sobre los cuales este proyecto no tiene jurisdicción ni control.
+              Toda la información consultada en esta pantalla fluye pura y exclusivamente en el lado del cliente (Navegador) a través del consumo pasivo de la <a href="https://animeflv.ahmedrangel.com/api" target="_blank" rel="noreferrer noopener" className="text-primary hover:underline font-bold">API no oficial externa de AnimeFLV</a>. Los reproductores de video incrustados (&quot;iframes&quot;) y sus enlaces de redirección externos corresponden única y exclusivamente a servidores públicos de terceros (como MEGA o Fembed) sobre los cuales este proyecto no tiene jurisdicción ni control.
             </p>
           </section>
 
           <section>
             <h2 className="text-2xl font-bold text-white mb-4">3. Fair Use (Uso Justo) y Limitación de Responsabilidad</h2>
             <p className="mb-4">
-              El desarrollo de la interfaz y su código fuente hace uso del principio de "Uso Justo" (Fair Use) para el desarrollo de software demostrativo. Al ingresar a la herramienta, el usuario acepta que <strong>Anime Fan no se hace responsable por el contenido, disponibilidad o fallos de los vínculos de terceros provistos u originados por la API original de AnimeFLV (www4.animeflv.net).</strong>
+              El desarrollo de la interfaz y su código fuente hace uso del principio de &quot;Uso Justo&quot; (Fair Use) para el desarrollo de software demostrativo. Al ingresar a la herramienta, el usuario acepta que <strong>Anime Fan no se hace responsable por el contenido, disponibilidad o fallos de los vínculos de terceros provistos u originados por la API original de AnimeFLV (www4.animeflv.net).</strong>
             </p>
           </section>
 

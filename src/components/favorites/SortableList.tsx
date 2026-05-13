@@ -1,7 +1,7 @@
 'use client';
 
 import { useDroppable } from '@dnd-kit/core';
-import { SortableContext, verticalListSortingStrategy, rectSortingStrategy } from '@dnd-kit/sortable';
+import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable';
 import DraggableAnimeCard from './DraggableAnimeCard';
 import { Trash2 } from 'lucide-react';
 

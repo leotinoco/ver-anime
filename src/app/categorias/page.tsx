@@ -24,7 +24,7 @@ export default async function CategoriasPage() {
           cover: details?.cover || '',
           genres: details?.genres || ['Desconocido'],
         };
-      } catch(e) {
+      } catch {
         return { ...anime, cover: '', genres: ['Desconocido'] };
       }
     })

@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Star, Clock, Calendar } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useRef, useEffect, useReducer } from 'react';
+import { ChevronLeft, ChevronRight, Star, Calendar } from 'lucide-react';
+import { m } from 'framer-motion';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const recommendedAnimes = [
   {
@@ -128,22 +129,62 @@ const recommendedAnimes = [
   }
 ];
 
+interface CarouselState {
+  currentIndex: number;
+  itemsPerView: number;
+  isTransitioning: boolean;
+}
+
+type CarouselAction =
+  | { type: 'SET_ITEMS_PER_VIEW'; payload: number }
+  | { type: 'NEXT' }
+  | { type: 'PREV' }
+  | { type: 'JUMP_TO'; payload: number }
+  | { type: 'FINISH_TRANSITION'; payload: number };
+
+const carouselReducer = (state: CarouselState, action: CarouselAction): CarouselState => {
+  switch (action.type) {
+    case 'SET_ITEMS_PER_VIEW':
+      return { ...state, itemsPerView: action.payload };
+    case 'NEXT':
+      return { ...state, currentIndex: state.currentIndex + 1, isTransitioning: true };
+    case 'PREV':
+      return { ...state, currentIndex: state.currentIndex - 1, isTransitioning: true };
+    case 'JUMP_TO':
+      return { ...state, currentIndex: action.payload, isTransitioning: true };
+    case 'FINISH_TRANSITION':
+      return { ...state, currentIndex: action.payload, isTransitioning: false };
+    default:
+      return state;
+  }
+};
+
 export default function RecommendedCarousel() {
-  const [currentIndex, setCurrentIndex] = useState(recommendedAnimes.length);
-  const [itemsPerView, setItemsPerView] = useState(4);
-  const [isTransitioning, setIsTransitioning] = useState(true);
+  const [state, dispatch] = useReducer(carouselReducer, {
+    currentIndex: recommendedAnimes.length,
+    itemsPerView: 4,
+    isTransitioning: true,
+  });
+  
+  const { currentIndex, itemsPerView, isTransitioning } = state;
+
   const containerRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Extend table to allow for infinite looping
-  const extendedAnimes = [...recommendedAnimes, ...recommendedAnimes, ...recommendedAnimes];
+  const extendedAnimes = [
+    ...recommendedAnimes.map(a => ({ ...a, uniqueKey: `prev-${a.id}` })),
+    ...recommendedAnimes.map(a => ({ ...a, uniqueKey: `curr-${a.id}` })),
+    ...recommendedAnimes.map(a => ({ ...a, uniqueKey: `next-${a.id}` }))
+  ];
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 640) setItemsPerView(2);
-      else if (window.innerWidth < 1024) setItemsPerView(2);
-      else if (window.innerWidth < 1280) setItemsPerView(3);
-      else setItemsPerView(4);
+      let nextItems = 4;
+      if (window.innerWidth < 640) nextItems = 2;
+      else if (window.innerWidth < 1024) nextItems = 2;
+      else if (window.innerWidth < 1280) nextItems = 3;
+      dispatch({ type: 'SET_ITEMS_PER_VIEW', payload: nextItems });
     };
 
     handleResize();
@@ -155,7 +196,7 @@ export default function RecommendedCarousel() {
   const startTimer = () => {
     if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = setInterval(() => {
-      nextSlide();
+      dispatch({ type: 'NEXT' });
     }, 3000);
   };
 
@@ -171,14 +212,12 @@ export default function RecommendedCarousel() {
   }, []);
 
   const nextSlide = () => {
-    setIsTransitioning(true);
-    setCurrentIndex((prev) => prev + 1);
+    dispatch({ type: 'NEXT' });
     resetTimer();
   };
 
   const prevSlide = () => {
-    setIsTransitioning(true);
-    setCurrentIndex((prev) => prev - 1);
+    dispatch({ type: 'PREV' });
     resetTimer();
   };
 
@@ -194,11 +233,9 @@ export default function RecommendedCarousel() {
   const handleAnimationComplete = () => {
     // Reposition silently when reaching clones
     if (currentIndex >= recommendedAnimes.length * 2) {
-      setIsTransitioning(false);
-      setCurrentIndex(currentIndex - recommendedAnimes.length);
+      dispatch({ type: 'FINISH_TRANSITION', payload: currentIndex - recommendedAnimes.length });
     } else if (currentIndex < recommendedAnimes.length) {
-      setIsTransitioning(false);
-      setCurrentIndex(currentIndex + recommendedAnimes.length);
+      dispatch({ type: 'FINISH_TRANSITION', payload: currentIndex + recommendedAnimes.length });
     }
   };
 
@@ -209,7 +246,7 @@ export default function RecommendedCarousel() {
     <div className="py-12 px-4 md:px-12 bg-gradient-to-b from-transparent to-[#141414]">
       <div className="flex items-center justify-between mb-8 gap-4">
         <div>
-          <h2 className="text-3xl md:text-5xl font-bold text-white flex items-center gap-4">
+          <h2 className="text-3xl md:text-5xl font-semibold text-white flex items-center gap-4">
             <span className="w-2 h-10 md:h-12 bg-red-600 rounded-full"></span>
             Recomendaciones
           </h2>
@@ -222,20 +259,20 @@ export default function RecommendedCarousel() {
             className="p-3 bg-zinc-800/80 hover:bg-zinc-700 text-white rounded-full transition-all border border-zinc-700/50 backdrop-blur-sm shadow-xl active:scale-95"
             aria-label="Anime anterior"
           >
-            <ChevronLeft size={28} />
+            <ChevronLeft className="size-7" />
           </button>
           <button 
             onClick={nextSlide}
             className="p-3 bg-zinc-800/80 hover:bg-zinc-700 text-white rounded-full transition-all border border-zinc-700/50 backdrop-blur-sm shadow-xl active:scale-95"
             aria-label="Siguiente anime"
           >
-            <ChevronRight size={28} />
+            <ChevronRight className="size-7" />
           </button>
         </div>
       </div>
 
       <div className="relative overflow-hidden group touch-pan-y" ref={containerRef}>
-        <motion.div 
+        <m.div 
           className="flex gap-3 md:gap-6 cursor-grab active:cursor-grabbing"
           drag="x"
           dragConstraints={containerRef}
@@ -246,19 +283,21 @@ export default function RecommendedCarousel() {
           onAnimationComplete={handleAnimationComplete}
           transition={isTransitioning ? { type: 'spring', damping: 35, stiffness: 200, mass: 0.8 } : { duration: 0 }}
         >
-          {extendedAnimes.map((anime, index) => (
+          {extendedAnimes.map((anime) => (
             <Link 
-              key={`${anime.id}-${index}`}
+              key={anime.uniqueKey}
               href={`/anime/${anime.slug}`}
               className="flex-shrink-0 select-none pb-4 block"
               style={{ width: `calc(${100 / itemsPerView}% - ${(itemsPerView - 1) * (itemsPerView > 2 ? 1.5 : 0.75)}rem / ${itemsPerView})` }}
               draggable="false"
             >
               <div className="group/card relative aspect-[2/3] rounded-3xl overflow-hidden shadow-2xl transition-all duration-500 md:hover:scale-[1.03] md:hover:shadow-red-600/30 bg-zinc-900 border border-white/5 h-full">
-                <img 
+                <Image 
                   src={anime.image} 
                   alt={anime.title}
-                  className="w-full h-full object-cover transition-transform duration-1000 group-hover/card:scale-110 pointer-events-none"
+                  fill
+                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
+                  className="object-cover transition-transform duration-1000 group-hover/card:scale-110 pointer-events-none"
                   draggable="false"
                 />
                 
@@ -267,24 +306,24 @@ export default function RecommendedCarousel() {
                 
                 {/* Top Badge */}
                 <div className="absolute top-5 left-5 z-10">
-                  <div className="bg-red-600/95 backdrop-blur-md text-white text-[10px] md:text-xs font-black px-2 py-1 md:px-3 md:py-1.5 rounded-lg flex items-center gap-1 md:gap-1.5 shadow-2xl">
-                    <Star size={14} fill="currentColor" />
+                  <div className="bg-red-600/95 backdrop-blur-md text-white text-[10px] md:text-xs font-semibold px-2 py-1 md:px-3 md:py-1.5 rounded-lg flex items-center gap-1 md:gap-1.5 shadow-2xl">
+                    <Star className="size-3.5 fill-current" />
                     {anime.rating}
                   </div>
                 </div>
 
                 {/* Content */}
                 <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8 z-20 translate-y-0 md:translate-y-6 group-hover/card:translate-y-0 transition-transform duration-500">
-                  <div className="flex items-center gap-2 md:gap-3 mb-2 md:mb-3 text-zinc-300 text-[10px] md:text-xs font-bold uppercase tracking-widest bg-white/5 w-fit px-2 py-1 md:px-3 rounded-full border border-white/10">
+                  <div className="flex items-center gap-2 md:gap-3 mb-2 md:mb-3 text-zinc-300 text-[10px] md:text-xs font-semibold uppercase tracking-widest bg-white/5 w-fit px-2 py-1 md:px-3 rounded-full border border-white/10">
                     <span className="flex items-center gap-1.5">
-                      <Calendar size={12} />
+                      <Calendar className="size-3" />
                       {anime.year}
                     </span>
-                    <span className="w-1 h-1 bg-zinc-500 rounded-full"></span>
+                    <span className="size-1 bg-zinc-500 rounded-full"></span>
                     <span>4K</span>
                   </div>
                   
-                  <h3 className="text-lg md:text-3xl font-black text-white mb-2 md:mb-3 line-clamp-1 group-hover/card:text-red-500 transition-colors drop-shadow-lg">
+                  <h3 className="text-lg md:text-3xl font-semibold text-white mb-2 md:mb-3 line-clamp-1 group-hover/card:text-red-500 transition-colors drop-shadow-lg">
                     {anime.title}
                   </h3>
                   
@@ -292,25 +331,24 @@ export default function RecommendedCarousel() {
                     {anime.description}
                   </p>
                   
-                  <div className="mt-4 md:mt-8 w-full bg-white text-black text-xs md:text-base font-black py-3 md:py-4 rounded-xl opacity-100 md:opacity-0 group-hover/card:opacity-100 transition-all duration-500 translate-y-0 md:translate-y-4 group-hover/card:translate-y-0 hover:bg-neutral-200 shadow-2xl flex items-center justify-center gap-2">
+                  <div className="mt-4 md:mt-8 w-full bg-white text-black text-xs md:text-base font-semibold py-3 md:py-4 rounded-xl opacity-100 md:opacity-0 group-hover/card:opacity-100 transition-all duration-500 translate-y-0 md:translate-y-4 group-hover/card:translate-y-0 hover:bg-neutral-200 shadow-2xl flex items-center justify-center gap-2">
                     VER AHORA
-                    <ChevronRight size={20} />
+                    <ChevronRight className="size-5" />
                   </div>
                 </div>
               </div>
             </Link>
           ))}
-        </motion.div>
+        </m.div>
       </div>
 
       {/* Position Indicators (Individuals) - Fixed at 12 dots */}
       <div className="flex justify-center gap-2 mt-12 flex-wrap max-w-full">
-        {recommendedAnimes.map((_, i) => (
+        {recommendedAnimes.map((anime, i) => (
           <button
-            key={i}
+            key={`dot-${anime.id}`}
             onClick={() => {
-              setIsTransitioning(true);
-              setCurrentIndex(recommendedAnimes.length + i);
+              dispatch({ type: 'JUMP_TO', payload: recommendedAnimes.length + i });
               resetTimer();
             }}
             className={`h-2 rounded-full transition-all duration-500 ${
@@ -318,7 +356,7 @@ export default function RecommendedCarousel() {
                 ? 'w-10 bg-red-600 shadow-[0_0_15px_rgba(220,38,38,0.5)]' 
                 : 'w-2 bg-zinc-800 hover:bg-zinc-600'
             }`}
-            aria-label={`Ir al anime ${i + 1}`}
+            aria-label={`Ir al anime ${anime.title}`}
           />
         ))}
       </div>

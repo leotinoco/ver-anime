@@ -25,7 +25,7 @@ export default async function MejorCalificadosPage() {
           cover: details?.cover || '',
           rating: details?.rating ? parseFloat(details.rating) : 0,
         };
-      } catch(e) {
+      } catch {
         return { ...anime, rating: 0 };
       }
     })

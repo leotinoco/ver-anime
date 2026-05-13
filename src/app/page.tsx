@@ -1,6 +1,5 @@
 import { getAnimesOnAir, getLatestEpisodes, getAnimeDetails } from '@/services/animeApi';
 import AnimeGrid from '@/components/ui/AnimeGrid';
-import BraveBanner from '@/components/ui/BraveBanner';
 import RecommendedCarousel from '@/components/ui/RecommendedCarousel';
 
 export const revalidate = 3600; // revalidate every hour for ISR
@@ -24,7 +23,7 @@ export default async function Home() {
           cover: details?.cover || '',
           synopsis: details?.synopsis || ''
         };
-      } catch(e) {
+      } catch {
         return anime;
       }
     })

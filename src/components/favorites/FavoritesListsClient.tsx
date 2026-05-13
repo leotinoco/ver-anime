@@ -1,6 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useOptimistic } from 'react';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { 
   DndContext, 
   DragOverlay, 
@@ -18,9 +20,7 @@ import {
   arrayMove, 
   sortableKeyboardCoordinates 
 } from '@dnd-kit/sortable';
-import { ListVideo } from 'lucide-react';
 import SortableList from './SortableList';
-import DraggableAnimeCard from './DraggableAnimeCard';
 
 interface List {
   _id: string;
@@ -33,7 +33,12 @@ interface FavoritesListsClientProps {
 }
 
 export default function FavoritesListsClient({ initialLists }: FavoritesListsClientProps) {
-  const [lists, setLists] = useState<List[]>(initialLists);
+  const router = useRouter();
+  const [lists, setOptimisticLists] = useOptimistic<List[], (prev: List[]) => List[]>(
+    initialLists,
+    (state, updateFn) => updateFn(state)
+  );
+  
   const [activeAnime, setActiveAnime] = useState<any>(null);
   const [activeListId, setActiveListId] = useState<string | null>(null);
 
@@ -75,7 +80,7 @@ export default function FavoritesListsClient({ initialLists }: FavoritesListsCli
       return;
     }
 
-    setLists((prev) => {
+    setOptimisticLists((prev) => {
       const activeItems = prev.find((l) => l._id === activeContainer)?.animes || [];
       const overItems = prev.find((l) => l._id === overContainer)?.animes || [];
 
@@ -136,26 +141,9 @@ export default function FavoritesListsClient({ initialLists }: FavoritesListsCli
     const activeIndex = lists.find(l => l._id === activeContainer)?.animes.findIndex(i => i.slug === activeId) ?? -1;
     const overIndex = lists.find(l => l._id === overContainer)?.animes.findIndex(i => i.slug === overId) ?? -1;
 
-    // Persist to API
-    try {
-      await fetch('/api/lists/move-anime', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          animeSlug: activeId,
-          sourceListId: activeContainer,
-          targetListId: overContainer,
-          newIndex: overIndex
-        }),
-      });
-    } catch (error) {
-      console.error('Failed to persist move:', error);
-      // Optional: rollback state
-    }
-
     if (activeContainer === overContainer) {
       if (activeIndex !== overIndex) {
-        setLists((prev) => prev.map((list) => {
+        setOptimisticLists((prev) => prev.map((list) => {
           if (list._id === activeContainer) {
             return {
               ...list,
@@ -169,15 +157,34 @@ export default function FavoritesListsClient({ initialLists }: FavoritesListsCli
 
     setActiveAnime(null);
     setActiveListId(null);
+
+    // Persist to API
+    try {
+      await fetch('/api/lists/move-anime', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          animeSlug: activeId,
+          sourceListId: activeContainer,
+          targetListId: overContainer,
+          newIndex: overIndex
+        }),
+      });
+      router.refresh();
+    } catch (error) {
+      console.error('Failed to persist move:', error);
+    }
   };
 
   const handleDeleteList = async (id: string) => {
     if (!confirm('¿Estás seguro de que quieres eliminar esta lista?')) return;
     
+    setOptimisticLists((prev) => prev.filter(l => l._id !== id));
+
     try {
       const res = await fetch(`/api/lists/${id}`, { method: 'DELETE' });
       if (res.ok) {
-        setLists(lists.filter(l => l._id !== id));
+        router.refresh();
       }
     } catch (error) {
       console.error('Delete list error:', error);
@@ -214,11 +221,13 @@ export default function FavoritesListsClient({ initialLists }: FavoritesListsCli
           }),
         }}>
         {activeAnime ? (
-          <div className="w-32 md:w-48 aspect-[2/3] rounded-md overflow-hidden bg-zinc-800 border-2 border-primary shadow-2xl opacity-80 cursor-grabbing">
-            <img
+          <div className="w-32 md:w-48 aspect-[2/3] rounded-md overflow-hidden bg-zinc-800 border-2 border-primary shadow-2xl opacity-80 cursor-grabbing relative">
+            <Image
               src={activeAnime.cover}
               alt={activeAnime.title}
-              className="w-full h-full object-cover"
+              fill
+              sizes="(max-width: 768px) 128px, 192px"
+              className="object-cover"
             />
           </div>
         ) : null}

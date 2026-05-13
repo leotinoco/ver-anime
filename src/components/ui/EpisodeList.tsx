@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { Play } from 'lucide-react';
 import EpisodeStatusBadge from './EpisodeStatusBadge';
@@ -13,12 +13,14 @@ interface EpisodeListProps {
   animeTitle: string;
 }
 
-type StatusMap = Record<number, 'pendiente' | 'viendo' | 'visto'>;
+interface StatusMap {
+  [key: number]: 'pendiente' | 'viendo' | 'visto';
+}
 
 export default function EpisodeList({ episodes, animeSlug, animeTitle }: EpisodeListProps) {
   const [statusMap, setStatusMap] = useState<StatusMap>({});
 
-  const fetchStatusMap = () => {
+  const fetchStatusMap = useCallback(() => {
     fetch(`/api/watch-progress?animeSlug=${animeSlug}`)
       .then(res => res.json())
       .then(data => {
@@ -27,11 +29,11 @@ export default function EpisodeList({ episodes, animeSlug, animeTitle }: Episode
         }
       })
       .catch(() => {}); // Silently fail if not authenticated
-  };
+  }, [animeSlug]);
 
   useEffect(() => {
     fetchStatusMap();
-  }, [animeSlug]);
+  }, [fetchStatusMap]);
 
   // Called by EpisodeStatusBadge after a successful save.
   // If previous episodes were bulk-updated, refetch the full map.

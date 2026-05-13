@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import Image from 'next/image';
+import { m } from 'framer-motion';
 import { Play, Search as SearchIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import AddToListButton from './AddToListButton';
@@ -13,8 +14,8 @@ interface JikanAnimeCardProps {
   type?: string;
 }
 
-export default function JikanAnimeCard({ slug, title, cover, type }: JikanAnimeCardProps) {
-  const router = useRouter();
+export default function JikanAnimeCard({ slug, title, cover }: JikanAnimeCardProps) {
+  const { push } = useRouter();
 
   const hasLocalSlug = slug !== null;
   const finalHref = hasLocalSlug ? `/anime/${slug}` : `/buscar?q=${encodeURIComponent(title)}`;
@@ -23,34 +24,34 @@ export default function JikanAnimeCard({ slug, title, cover, type }: JikanAnimeC
     <div className="relative group w-full aspect-[2/3] cursor-pointer">
       {/* Image Container (Clipped) */}
       <div className="relative w-full h-full rounded-md overflow-hidden shadow-lg border border-zinc-800">
-        <Link href={finalHref} className="block w-full h-full">
-          <motion.div 
-            className="w-full h-full"
+        <Link href={finalHref} className="block w-full h-full relative">
+          <m.div 
+            className="w-full h-full relative"
             whileHover={{ scale: 1.05 }}
             transition={{ duration: 0.2 }}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img 
+            <Image 
               src={cover} 
               alt={title}
-              className="w-full h-full object-cover"
-              loading="lazy"
+              fill
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              className="object-cover"
             />
             
             {/* Background Shade on Hover (desktop only) */}
             <div className="absolute inset-0 bg-black/60 opacity-0 md:group-hover:opacity-100 transition-opacity duration-300" />
-          </motion.div>
+          </m.div>
         </Link>
       </div>
 
       {/* Título siempre visible en móvil (gradiente inferior) */}
       <div className="absolute inset-x-0 bottom-0 z-20 pointer-events-none md:hidden">
         <div className="rounded-b-md bg-gradient-to-t from-black/85 via-black/40 to-transparent px-2 pt-6 pb-2">
-          <h3 className="text-white font-bold text-xs line-clamp-2 drop-shadow-md">
+          <h3 className="text-white font-semibold text-xs line-clamp-2 drop-shadow-md">
             {title}
           </h3>
           {!hasLocalSlug && (
-            <span className="inline-block mt-1 px-1.5 py-0.5 bg-yellow-500/20 border border-yellow-500/40 rounded text-yellow-300 text-[9px] font-bold">
+            <span className="inline-block mt-1 px-1.5 py-0.5 bg-yellow-500/20 border border-yellow-500/40 rounded text-yellow-300 text-[9px] font-semibold">
               Buscar en catálogo
             </span>
           )}
@@ -60,21 +61,21 @@ export default function JikanAnimeCard({ slug, title, cover, type }: JikanAnimeC
       {/* Floating UI Layer — solo visible en desktop al hacer hover */}
       <div className="absolute inset-0 z-20 flex flex-col justify-end p-3 pointer-events-none opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 hidden md:flex">
         <div className="mb-1">
-          <h3 className="text-white font-bold text-xs md:text-sm line-clamp-2 mb-2 drop-shadow-md">
+          <h3 className="text-white font-semibold text-xs md:text-sm line-clamp-2 mb-2 drop-shadow-md">
             {title}
           </h3>
           
           <div className="flex items-center gap-2 mb-2 pointer-events-auto">
             <button 
-              onClick={(e) => { e.preventDefault(); e.stopPropagation(); router.push(finalHref)}}
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); push(finalHref)}}
               aria-label={hasLocalSlug ? 'Ver anime' : 'Buscar anime'} 
               title={hasLocalSlug ? 'Ver anime' : 'Buscar en catálogo'}
-              className="w-8 h-8 rounded-full bg-white flex items-center justify-center hover:bg-neutral-300 transition-colors shadow-lg"
+              className="size-8 rounded-full bg-white flex items-center justify-center hover:bg-neutral-300 transition-colors shadow-lg"
             >
               {hasLocalSlug ? (
-                <Play className="w-4 h-4 text-black fill-black ml-0.5" />
+                <Play className="size-4 text-black fill-black ml-0.5" />
               ) : (
-                <SearchIcon className="w-4 h-4 text-black" />
+                <SearchIcon className="size-4 text-black" />
               )}
             </button>
             
@@ -89,7 +90,7 @@ export default function JikanAnimeCard({ slug, title, cover, type }: JikanAnimeC
           </div>
           
           {!hasLocalSlug && (
-            <span className="inline-block px-2 py-0.5 bg-yellow-500/20 border border-yellow-500/40 rounded text-yellow-300 text-[10px] font-bold">
+            <span className="inline-block px-2 py-0.5 bg-yellow-500/20 border border-yellow-500/40 rounded text-yellow-300 text-[10px] font-semibold">
               Buscar en catálogo
             </span>
           )}

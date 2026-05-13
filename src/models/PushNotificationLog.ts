@@ -1,7 +1,6 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
-export type PushNotificationType = "new_episode" | "favorites_reminder";
-export type PushNotificationInteraction = "opened" | "dismissed";
+type PushNotificationType = "new_episode" | "favorites_reminder";
 
 export interface IPushNotificationLog extends Document {
   userId: string;

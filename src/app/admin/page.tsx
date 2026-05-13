@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Users, Shield, UserPlus, Trash2, X, CheckCircle, AlertTriangle } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+
 
 export default function AdminPage() {
   const [users, setUsers] = useState<any[]>([]);
@@ -10,7 +10,6 @@ export default function AdminPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<{type: 'success' | 'error', msg: string} | null>(null);
-  const router = useRouter();
 
   // Form State
   const [formData, setFormData] = useState({

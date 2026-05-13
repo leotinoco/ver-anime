@@ -80,7 +80,7 @@ export default async function SearchPage({
                  <Frown className="w-16 h-16 text-gray-600 mb-4" />
                  <h2 className="text-2xl font-bold mb-2">No se encontraron resultados</h2>
                  <p className="text-gray-400 max-w-md">
-                   No pudimos encontrar animes que coincidan con tu búsqueda "{query}". Intenta con otros términos.
+                   No pudimos encontrar animes que coincidan con tu búsqueda &quot;{query}&quot;. Intenta con otros términos.
                  </p>
                </div>
              )

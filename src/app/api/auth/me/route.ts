@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
       } 
     }, { status: 200 });
 
-  } catch (error) {
+  } catch {
     return NextResponse.json({ authenticated: false, error: 'Failed to authenticate' }, { status: 401 });
   }
 }

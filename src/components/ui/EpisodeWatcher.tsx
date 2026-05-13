@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useSyncExternalStore } from "react";
+import useSWRMutation from "swr/mutation";
 import EpisodeStatusBadge from "./EpisodeStatusBadge";
 import {
   applyPlaybackTick,
@@ -18,6 +19,28 @@ interface EpisodeWatcherProps {
   initialStatus?: "pendiente" | "viendo" | "visto";
 }
 
+const subscribeOnline = (callback: () => void) => {
+  window.addEventListener("online", callback);
+  window.addEventListener("offline", callback);
+  return () => {
+    window.removeEventListener("online", callback);
+    window.removeEventListener("offline", callback);
+  };
+};
+
+const getSnapshotOnline = () => navigator.onLine;
+const getServerSnapshotOnline = () => true;
+
+const updateProgressFetcher = async (url: string, { arg }: { arg: { animeSlug: string; episodeNumber: number; status: string; source: string } }) => {
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(arg),
+  });
+  if (!res.ok) throw new Error("Failed to update progress");
+  return res.json();
+};
+
 export default function EpisodeWatcher({
   animeSlug,
   episodeNumber,
@@ -29,21 +52,11 @@ export default function EpisodeWatcher({
   );
   const lastTickAtMsRef = useRef<number | null>(null);
   const lastPersistAtMsRef = useRef<number | null>(null);
-  const sendingRef = useRef(false);
   const pendingStatusRef = useRef<EpisodeStatus | null>(null);
-  const [isOnline, setIsOnline] = useState(true);
-
-  useEffect(() => {
-    setIsOnline(navigator.onLine);
-    const onOnline = () => setIsOnline(true);
-    const onOffline = () => setIsOnline(false);
-    window.addEventListener("online", onOnline);
-    window.addEventListener("offline", onOffline);
-    return () => {
-      window.removeEventListener("online", onOnline);
-      window.removeEventListener("offline", onOffline);
-    };
-  }, []);
+  
+  const isOnline = useSyncExternalStore(subscribeOnline, getSnapshotOnline, getServerSnapshotOnline);
+  
+  const { trigger, isMutating } = useSWRMutation("/api/watch-progress", updateProgressFetcher);
 
   useEffect(() => {
     statusRef.current = initialStatus;
@@ -112,7 +125,7 @@ export default function EpisodeWatcher({
     };
 
     const sendPending = async () => {
-      if (sendingRef.current) return;
+      if (isMutating) return;
       const pending = pendingStatusRef.current;
       if (!pending) return;
       if (pending !== "viendo" && pending !== "visto") return;
@@ -126,26 +139,17 @@ export default function EpisodeWatcher({
         return;
       }
 
-      sendingRef.current = true;
       try {
-        const res = await fetch("/api/watch-progress", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            animeSlug,
-            episodeNumber,
-            status: pending,
-            source: "auto",
-          }),
+        await trigger({
+          animeSlug,
+          episodeNumber,
+          status: pending,
+          source: "auto",
         });
-        if (res.ok) {
-          statusRef.current = pending;
-          pendingStatusRef.current = null;
-          persist();
-        }
+        statusRef.current = pending;
+        pendingStatusRef.current = null;
+        persist();
       } catch {
-      } finally {
-        sendingRef.current = false;
       }
     };
 
@@ -183,7 +187,7 @@ export default function EpisodeWatcher({
       window.removeEventListener("beforeunload", onBeforeUnload);
       persist();
     };
-  }, [animeSlug, episodeNumber, initialStatus]);
+  }, [animeSlug, episodeNumber, initialStatus, trigger, isMutating]);
 
   return (
     <div className="mt-6 flex items-center gap-3 bg-zinc-900 border border-zinc-800 rounded-xl p-4 max-w-5xl mx-auto">

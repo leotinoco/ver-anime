@@ -132,22 +132,22 @@ export default function ChangelogPage() {
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold mb-4 uppercase tracking-widest">
             <Zap size={14} /> Bitácora de Desarrollo
           </div>
-          <h1 className="text-5xl font-black mb-4">Changelog</h1>
-          <p className="text-gray-400 text-lg">
+          <h1 className="text-5xl font-semibold mb-4">Changelog</h1>
+          <p className="text-zinc-400 text-lg">
             Sigue la evolución técnica y funcional de Anime Fan.
           </p>
         </div>
 
         <div className="space-y-12 relative before:absolute before:inset-y-0 before:left-8 before:w-px before:bg-zinc-800">
-          {updates.map((update, index) => (
-            <div key={index} className="relative pl-20 group">
-              <div className="absolute left-0 top-0 w-16 h-16 bg-zinc-900 border border-zinc-800 rounded-2xl flex items-center justify-center shadow-2xl group-hover:border-primary/50 transition-colors">
+          {updates.map((update) => (
+            <div key={update.version} className="relative pl-20 group">
+              <div className="absolute left-0 top-0 size-16 bg-zinc-900 border border-zinc-800 rounded-2xl flex items-center justify-center shadow-2xl group-hover:border-primary/50 transition-colors">
                 {update.icon}
               </div>
               
               <div className="bg-zinc-900/50 border border-zinc-800 p-8 rounded-2xl group-hover:bg-zinc-900 transition-all">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-4">
-                  <h2 className="text-2xl font-bold">{update.title}</h2>
+                  <h2 className="text-2xl font-semibold">{update.title}</h2>
                   <div className="flex items-center gap-3">
                     <span className="text-primary font-mono font-bold text-sm">{update.version}</span>
                     <span className="text-zinc-500 text-sm">{update.date}</span>
@@ -156,8 +156,8 @@ export default function ChangelogPage() {
                 
                 <ul className="space-y-3">
                   {update.changes.map((change, i) => (
-                    <li key={i} className="flex gap-3 text-gray-400 leading-relaxed">
-                      <span className="text-primary mt-1.5 h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
+                    <li key={`${update.version}-${i}`} className="flex gap-3 text-zinc-400 leading-relaxed">
+                      <span className="text-primary mt-1.5 size-1.5 rounded-full bg-primary shrink-0" />
                       {change}
                     </li>
                   ))}
@@ -168,9 +168,9 @@ export default function ChangelogPage() {
         </div>
 
         <div className="mt-20 p-8 bg-gradient-to-br from-zinc-900 to-black border border-zinc-800 rounded-3xl text-center">
-          <Milestone className="w-12 h-12 text-zinc-700 mx-auto mb-4" />
-          <h3 className="text-xl font-bold mb-2">¿Tienes una sugerencia?</h3>
-          <p className="text-gray-500 mb-6">
+          <Milestone className="size-12 text-zinc-700 mx-auto mb-4" />
+          <h3 className="text-xl font-semibold mb-2">¿Tienes una sugerencia?</h3>
+          <p className="text-zinc-500 mb-6">
             Este proyecto está en constante evolución técnica para mejorar la experiencia de usuario.
           </p>
           <a 

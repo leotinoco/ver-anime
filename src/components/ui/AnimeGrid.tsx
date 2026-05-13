@@ -1,7 +1,7 @@
 'use client';
 
 import AnimeCard from './AnimeCard';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 
 interface AnimeGridProps {
   title: string;
@@ -32,7 +32,7 @@ export default function AnimeGrid({ title, items, isEpisode = false }: AnimeGrid
         {title}
       </h2>
 
-      <motion.div
+      <m.div
         className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-3 md:gap-4"
         variants={containerVariants}
         initial="hidden"
@@ -45,7 +45,7 @@ export default function AnimeGrid({ title, items, isEpisode = false }: AnimeGrid
               ? rawSlug.replace(new RegExp(`-${item.number}$`), '')
               : rawSlug;
           return (
-            <motion.div key={`${rawSlug}-${id}`} variants={itemVariants}>
+            <m.div key={`${rawSlug}-${id}`} variants={itemVariants}>
               <AnimeCard
                 slug={parsedSlug}
                 title={item.title || 'No Title'}
@@ -53,10 +53,10 @@ export default function AnimeGrid({ title, items, isEpisode = false }: AnimeGrid
                 type={item.type}
                 episodeNumber={isEpisode ? item.number : undefined}
               />
-            </motion.div>
+            </m.div>
           );
         })}
-      </motion.div>
+      </m.div>
     </section>
   );
 }

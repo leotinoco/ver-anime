@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google"; // Wait, Next.js handles Google fonts natively but requires installation, wait, create-next-app already provides them
+import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
 import BraveBanner from "@/components/ui/BraveBanner";
+import { MotionProvider } from "@/components/shared/MotionProvider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -44,12 +45,14 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-background text-foreground selection:bg-primary selection:text-white overflow-x-hidden">
-        <Navbar />
-        <BraveBanner />
-        <main className="flex-1 w-full flex flex-col min-h-screen">
-          {children}
-        </main>
-        <Footer />
+        <MotionProvider>
+          <Navbar />
+          <BraveBanner />
+          <main className="flex-1 w-full flex flex-col min-h-screen">
+            {children}
+          </main>
+          <Footer />
+        </MotionProvider>
       </body>
     </html>
   );

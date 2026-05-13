@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useOptimistic } from 'react';
 import { CheckCircle2, Clock, Circle, ChevronDown } from 'lucide-react';
 
 type EpisodeStatus = 'pendiente' | 'viendo' | 'visto';
@@ -43,26 +43,24 @@ export default function EpisodeStatusBadge({
   dropdownDirection = 'down',
   onStatusChange,
 }: EpisodeStatusBadgeProps) {
-  const [status, setStatus] = useState<EpisodeStatus>(initialStatus);
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
-
-  // Sync when parent updates initialStatus (e.g. after fetching statusMap from API)
-  useEffect(() => {
-    setStatus(initialStatus);
-  }, [initialStatus]);
-
-  const config = STATUS_CONFIG[status];
-
   const [error, setError] = useState(false);
 
+  const [optimisticStatus, setOptimisticStatus] = useOptimistic<EpisodeStatus, EpisodeStatus>(
+    initialStatus,
+    (_, newStatus) => newStatus,
+  );
+
+  const config = STATUS_CONFIG[optimisticStatus];
+
   const updateStatus = async (newStatus: EpisodeStatus) => {
-    if (newStatus === status) { setOpen(false); return; }
-    const previous = status;
-    setStatus(newStatus); // Optimistic update
+    if (newStatus === optimisticStatus) { setOpen(false); return; }
     setOpen(false);
     setSaving(true);
     setError(false);
+    setOptimisticStatus(newStatus); // Optimistic update
+    
     try {
       const res = await fetch('/api/watch-progress', {
         method: 'POST',
@@ -70,8 +68,6 @@ export default function EpisodeStatusBadge({
         body: JSON.stringify({ animeSlug, episodeNumber, status: newStatus, source: 'manual' }),
       });
       if (!res.ok) {
-        // Revert on failure
-        setStatus(previous);
         setError(true);
         setTimeout(() => setError(false), 3000);
       } else {
@@ -83,7 +79,6 @@ export default function EpisodeStatusBadge({
       }
     } catch (e) {
       console.error(e);
-      setStatus(previous);
       setError(true);
       setTimeout(() => setError(false), 3000);
     } finally {
@@ -101,7 +96,15 @@ export default function EpisodeStatusBadge({
   }
 
   return (
-    <div className="relative" onClick={(e) => e.preventDefault()}>
+    <div 
+      className="relative" 
+      onClick={(e) => e.preventDefault()}
+      role="button"
+      tabIndex={-1}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') e.preventDefault();
+      }}
+    >
       <button
         onClick={(e) => { e.stopPropagation(); setOpen(!open); }}
         disabled={saving}
@@ -126,7 +129,7 @@ export default function EpisodeStatusBadge({
               <button
                 key={s}
                 onClick={(e) => { e.stopPropagation(); updateStatus(s); }}
-                className={`w-full flex items-center gap-2 px-3 py-2 rounded text-xs font-semibold hover:bg-zinc-800 transition-colors ${status === s ? 'text-white' : 'text-gray-400'}`}
+                className={`w-full flex items-center gap-2 px-3 py-2 rounded text-xs font-semibold hover:bg-zinc-800 transition-colors ${optimisticStatus === s ? 'text-white' : 'text-gray-400'}`}
               >
                 <span className={`w-2 h-2 rounded-full ${sc.dot}`} />
                 {sc.label}
@@ -138,3 +141,4 @@ export default function EpisodeStatusBadge({
     </div>
   );
 }
+
