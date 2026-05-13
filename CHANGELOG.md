@@ -1,5 +1,16 @@
 # Changelog de Anime Fan
 
+## [1.3.8] - 2026-05-13
+
+### Refactorización
+
+- Limpieza profunda del proyecto para resolver advertencias de ESLint y mejorar la estabilidad.
+- Eliminación de variables e imports no utilizados en múltiples componentes y páginas.
+- Corrección de bloques catch con variables no usadas.
+- Solución de problemas de accesibilidad (a11y) en la página de perfil (botones de avatar).
+- Corrección de entidades no escapadas (comillas) en `buscar/page.tsx` y `legal/page.tsx`.
+- Cambio de `let` a `const` en variables que no se reasignan.
+
 ## [1.3.7] - 2026-05-06
 
 ### Añadido
