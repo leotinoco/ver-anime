@@ -1,5 +1,13 @@
 # Changelog de Anime Fan
 
+## [1.3.9] - 2026-05-14
+
+### Corregido
+
+- 📱 **Interacción Táctil en Móvil**: Se solucionó el problema donde las miniaturas de animes no respondían correctamente al toque en dispositivos móviles. Ahora toda el área es clicable.
+- 🎢 **Carrusel de Recomendaciones**: Se corrigió el conflicto entre el arrastre (swipe) y el toque (tap) en móviles.
+- ⚡ **Respuesta Táctil**: Se eliminó el retraso de 300ms en clics táctiles para una navegación más fluida.
+
 ## [1.3.8] - 2026-05-13
 
 ### Refactorización

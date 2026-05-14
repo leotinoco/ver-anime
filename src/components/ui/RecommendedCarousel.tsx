@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight, Star, Calendar } from 'lucide-react';
 import { m } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 const recommendedAnimes = [
   {
@@ -170,6 +171,8 @@ export default function RecommendedCarousel() {
 
   const containerRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const dragStartRef = useRef<{ x: number; y: number } | null>(null);
+  const router = useRouter();
 
   // Extend table to allow for infinite looping
   const extendedAnimes = [
@@ -230,6 +233,24 @@ export default function RecommendedCarousel() {
     }
   };
 
+  // Track pointer down position for drag vs tap detection
+  const handlePointerDown = (e: React.PointerEvent) => {
+    dragStartRef.current = { x: e.clientX, y: e.clientY };
+  };
+
+  // Navigate only if the pointer didn't move much (it was a tap, not a drag)
+  const handleCardClick = (e: React.MouseEvent, slug: string) => {
+    if (dragStartRef.current) {
+      const dx = Math.abs(e.clientX - dragStartRef.current.x);
+      const dy = Math.abs(e.clientY - dragStartRef.current.y);
+      if (dx > 8 || dy > 8) {
+        e.preventDefault();
+        return;
+      }
+    }
+    // Allow normal Link navigation for taps
+  };
+
   const handleAnimationComplete = () => {
     // Reposition silently when reaching clones
     if (currentIndex >= recommendedAnimes.length * 2) {
@@ -287,9 +308,11 @@ export default function RecommendedCarousel() {
             <Link 
               key={anime.uniqueKey}
               href={`/anime/${anime.slug}`}
-              className="flex-shrink-0 select-none pb-4 block"
+              className="flex-shrink-0 select-none pb-4 block touch-manipulation"
               style={{ width: `calc(${100 / itemsPerView}% - ${(itemsPerView - 1) * (itemsPerView > 2 ? 1.5 : 0.75)}rem / ${itemsPerView})` }}
               draggable="false"
+              onPointerDown={handlePointerDown}
+              onClick={(e) => handleCardClick(e, anime.slug)}
             >
               <div className="group/card relative aspect-[2/3] rounded-3xl overflow-hidden shadow-2xl transition-all duration-500 md:hover:scale-[1.03] md:hover:shadow-red-600/30 bg-zinc-900 border border-white/5 h-full">
                 <Image 

@@ -42,7 +42,7 @@ export default function Carousel({ title, items, isEpisode = false }: CarouselPr
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute left-0 top-0 bottom-0 z-40 flex w-12 cursor-pointer items-center justify-center bg-gradient-to-r from-[#141414] to-transparent hover:bg-[#141414]/80 transition-all"
+              className="absolute left-0 top-0 bottom-0 z-40 flex w-12 cursor-pointer items-center justify-center bg-gradient-to-r from-[#141414] to-transparent hover:bg-[#141414]/80 transition-all pointer-events-none md:pointer-events-auto"
               onClick={() => handleClick('left')}
               role="button"
               tabIndex={0}
@@ -55,7 +55,7 @@ export default function Carousel({ title, items, isEpisode = false }: CarouselPr
 
         <div 
           ref={rowRef}
-          className="flex items-center gap-2 md:gap-4 overflow-x-scroll hide-scroll px-4 md:px-12 h-[260px] md:h-[350px]"
+          className="flex items-center gap-2 md:gap-4 overflow-x-scroll hide-scroll px-4 md:px-12 py-2"
         >
           {items.map((item, id) => {
             const rawSlug = item.slug || '';
@@ -75,7 +75,7 @@ export default function Carousel({ title, items, isEpisode = false }: CarouselPr
         </div>
 
         <div
-          className="absolute right-0 top-0 bottom-0 z-40 flex w-12 cursor-pointer items-center justify-center bg-gradient-to-l from-[#141414] to-transparent hover:bg-[#141414]/80 transition-all opacity-0 group-hover:opacity-100"
+          className="absolute right-0 top-0 bottom-0 z-40 flex w-12 cursor-pointer items-center justify-center bg-gradient-to-l from-[#141414] to-transparent hover:bg-[#141414]/80 transition-all opacity-0 group-hover:opacity-100 pointer-events-none md:pointer-events-auto"
           onClick={() => handleClick('right')}
           role="button"
           tabIndex={0}

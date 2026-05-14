@@ -21,31 +21,34 @@ export default function JikanAnimeCard({ slug, title, cover }: JikanAnimeCardPro
   const finalHref = hasLocalSlug ? `/anime/${slug}` : `/buscar?q=${encodeURIComponent(title)}`;
 
   return (
-    <div className="relative group w-full aspect-[2/3] cursor-pointer">
-      {/* Image Container (Clipped) */}
+    <Link
+      href={finalHref}
+      className="relative group w-full aspect-[2/3] cursor-pointer block touch-manipulation"
+      draggable="false"
+    >
+      {/* Image Container */}
       <div className="relative w-full h-full rounded-md overflow-hidden shadow-lg border border-zinc-800">
-        <Link href={finalHref} className="block w-full h-full relative">
-          <m.div 
-            className="w-full h-full relative"
-            whileHover={{ scale: 1.05 }}
-            transition={{ duration: 0.2 }}
-          >
-            <Image 
-              src={cover} 
-              alt={title}
-              fill
-              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-              className="object-cover"
-            />
-            
-            {/* Background Shade on Hover (desktop only) */}
-            <div className="absolute inset-0 bg-black/60 opacity-0 md:group-hover:opacity-100 transition-opacity duration-300" />
-          </m.div>
-        </Link>
+        <m.div 
+          className="w-full h-full relative"
+          whileHover={{ scale: 1.05 }}
+          transition={{ duration: 0.2 }}
+        >
+          <Image 
+            src={cover} 
+            alt={title}
+            fill
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            className="object-cover pointer-events-none"
+            draggable="false"
+          />
+          
+          {/* Background Shade on Hover (desktop only) */}
+          <div className="absolute inset-0 bg-black/60 opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+        </m.div>
       </div>
 
       {/* Título siempre visible en móvil (gradiente inferior) */}
-      <div className="absolute inset-x-0 bottom-0 z-20 pointer-events-none md:hidden">
+      <div className="absolute inset-x-0 bottom-0 z-10 pointer-events-none md:hidden">
         <div className="rounded-b-md bg-gradient-to-t from-black/85 via-black/40 to-transparent px-2 pt-6 pb-2">
           <h3 className="text-white font-semibold text-xs line-clamp-2 drop-shadow-md">
             {title}
@@ -59,13 +62,17 @@ export default function JikanAnimeCard({ slug, title, cover }: JikanAnimeCardPro
       </div>
 
       {/* Floating UI Layer — solo visible en desktop al hacer hover */}
-      <div className="absolute inset-0 z-20 flex flex-col justify-end p-3 pointer-events-none opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 hidden md:flex">
+      <div className="absolute inset-0 z-10 flex-col justify-end p-3 pointer-events-none opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 hidden md:flex">
         <div className="mb-1">
           <h3 className="text-white font-semibold text-xs md:text-sm line-clamp-2 mb-2 drop-shadow-md">
             {title}
           </h3>
           
-          <div className="flex items-center gap-2 mb-2 pointer-events-auto">
+          {/* Interactive buttons — stop propagation to prevent Link navigation */}
+          <div
+            className="flex items-center gap-2 mb-2 pointer-events-auto"
+            onClick={(e) => e.preventDefault()}
+          >
             <button 
               onClick={(e) => { e.preventDefault(); e.stopPropagation(); push(finalHref)}}
               aria-label={hasLocalSlug ? 'Ver anime' : 'Buscar anime'} 
@@ -96,6 +103,6 @@ export default function JikanAnimeCard({ slug, title, cover }: JikanAnimeCardPro
           )}
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

@@ -3,16 +3,24 @@ import { Milestone, Rocket, ShieldCheck, Sparkles, Zap } from 'lucide-react';
 export default function ChangelogPage() {
   const updates = [
     {
+      version: 'v1.3.9',
+      date: '14 de Mayo, 2026',
+      title: 'Mejoras en Interacción Móvil',
+      icon: <Sparkles className="text-yellow-400" />,
+      changes: [
+        '📱 Interacción táctil: Se corrigió el problema donde las miniaturas no respondían bien al tocarlas en móvil.',
+        '🎢 Carrusel fluido: Mejoras en el carrusel de recomendaciones para que no se confunda el deslizar con el tocar.',
+        '⚡ Carga rápida: Eliminación del retraso de respuesta táctil en dispositivos móviles.'
+      ]
+    },
+    {
       version: 'v1.3.8',
       date: '13 de Mayo, 2026',
       title: 'Limpieza de Código y Estabilidad',
       icon: <ShieldCheck className="text-green-500" />,
       changes: [
-        '🧹 Limpieza Profunda: Eliminación de variables e imports no utilizados en múltiples componentes y páginas.',
-        '🛡️ Manejo de Errores: Corrección de bloques catch con variables no usadas.',
-        '♿ Accesibilidad (a11y): Solución de problemas en la página de perfil (botones de avatar).',
-        '📝 Entidades Escapadas: Corrección de comillas en buscar y aviso legal.',
-        '📌 Estabilidad: Cambio de let a const en variables que no se reasignan.'
+        '🧹 Mantenimiento: Limpieza de código y corrección de errores internos para mejorar la estabilidad.',
+        '♿ Accesibilidad: Mejoras en la página de perfil para lectores de pantalla y navegación.'
       ]
     },
     {
@@ -21,11 +29,11 @@ export default function ChangelogPage() {
       title: 'Notificaciones Móvil y Corrección de Sesión',
       icon: <ShieldCheck className="text-green-500" />,
       changes: [
-        '🔔 Notificaciones en Móvil: El ícono de campana ahora es visible en la barra de navegación de todos los dispositivos (antes estaba oculto en móvil).',
-        '📱 Panel Responsive: El panel de notificaciones se adapta al ancho de pantalla en móvil para evitar desbordamientos.',
+        '🔔 Notificaciones en Móvil: El ícono de campana ahora es visible en la barra de navegación de todos los dispositivos.',
+        '📱 Panel Responsive: El panel de notificaciones se adapta al ancho de pantalla en móvil.',
         '📋 Acceso rápido: Enlace a "Notificaciones" añadido al menú hamburguesa móvil.',
-        '🔐 Persistencia de Sesión: Corregido el bug que pedía credenciales al navegar entre páginas protegidas (/favoritos, /notificaciones).',
-        '🔗 Redirect inteligente: Tras el login, el usuario regresa automáticamente a la página que intentaba visitar.'
+        '🔐 Persistencia de Sesión: Corregido el problema que cerraba la sesión inesperadamente al navegar.',
+        '🔗 Redirect inteligente: Tras el login, regresas automáticamente a la página que intentabas visitar.'
       ]
     },
     {
@@ -45,8 +53,7 @@ export default function ChangelogPage() {
       title: 'Mantenimiento y Estabilidad',
       icon: <ShieldCheck className="text-green-500" />,
       changes: [
-        '🐛 Corrección de Desborde: Eliminación del scroll horizontal causado por los botones del slider en resoluciones móviles.',
-        '🔧 Optimización de Repositorio: Configuración de .gitignore para excluir carpetas de agentes inteligentes.'
+        '🐛 Corrección de Desborde: Eliminación del scroll horizontal causado por los botones del slider en resoluciones móviles.'
       ]
     },
     {
@@ -65,11 +72,11 @@ export default function ChangelogPage() {
       title: 'Mejoras de UX y Correcciones de UI',
       icon: <Zap className="text-yellow-400" />,
       changes: [
-        '⏯️ Reanudación Inteligente: El botón "Ver Ep." ahora sugiere el siguiente episodio lógico (Viendo > Pendiente).',
+        '⏯️ Reanudación Inteligente: El botón "Ver Ep." ahora sugiere el siguiente episodio lógico.',
         '🏷️ Títulos Enriquecidos: Inclusión explícita del número de episodio en el título de la página de reproducción.',
-        '🔼 Menú Anti-Recorte: Mejora en la lógica del EpisodeStatusBadge para abrirse hacia arriba al final de las listas.',
+        '🔼 Menú Anti-Recorte: Mejora en la lógica del menú desplegable para abrirse hacia arriba al final de las listas.',
         '📑 Nombres Completos: Los títulos de animes en favoritos ya no se truncan con puntos suspensivos.',
-        '👁️ Marcado Automático: Los episodios anteriores se marcan como "Visto" automáticamente al avanzar en la serie.'
+        '👁️ Marcado Automático: Los episodios anteriores se marcan como "Visto" automáticamente al avanzar.'
       ]
     },
     {
@@ -90,7 +97,7 @@ export default function ChangelogPage() {
       title: 'Catálogo de Géneros Completo',
       icon: <Sparkles className="text-yellow-500" />,
       changes: [
-        'Integración de 40 categorías de anime vinculadas directamente a AnimeFLV.',
+        'Integración de 40 categorías de anime vinculadas directamente.',
         'Rediseño minimalista de botones de género para mejorar la densidad de información.',
         'Reestructuración de la página de Categorías: Enlaces globales al inicio.',
         'Optimización de espaciado y navegación responsiva en móviles.'
@@ -106,7 +113,7 @@ export default function ChangelogPage() {
         'Panel de Administración para la creación y gestión de usuarios.',
         'Página de Perfil personalizada con gestión de listas.',
         'Funcionalidad para renombrar listas de favoritos directamente desde el perfil.',
-        'Implementación de Middleware para la protección de rutas privadas.',
+        '🛡️ Mayor seguridad en las páginas privadas de tu cuenta.',
         'Rediseño legal y profesionalización del Footer.'
       ]
     },
@@ -116,10 +123,9 @@ export default function ChangelogPage() {
       title: 'Optimización de Contenido y Ranking',
       icon: <Sparkles className="text-yellow-500" />,
       changes: [
-        'Nuevo sistema de "Mejor Calificados" ordenado por rating real de la API.',
+        'Nuevo sistema de "Mejor Calificados" ordenado por rating real.',
         'Sección de "Categorías" con filtrado dinámico por géneros.',
-        'Bypass de restricciones de servidor: Priorización de MEGA como reproductor predeterminado.',
-        'Capa de abstracción para apertura de enlaces externos en reproductores restringidos.',
+        '⚡ Mejoras en la reproducción de video para evitar bloqueos.',
         'Mejora en la velocidad de carga de miniaturas y metadatos.'
       ]
     },
@@ -130,7 +136,13 @@ export default function ChangelogPage() {
       icon: <Rocket className="text-blue-500" />,
       changes: [
         'Interfaz de usuario premium inspirada en Netflix.',
-        'Consumo integral de la API no oficial de AnimeFLV.',
+        'Consumo integral del catálogo de anime.',
+        'Buscador global de animes funcional.',
+        'Sistema de favoritos local inicial.',
+        'Diseño responsivo para móviles y escritorio.'
+      ]
+    }
+  ];meFLV.',
         'Buscador global de animes funcional.',
         'Sistema de favoritos local inicial.',
         'Diseño responsivo para móviles y escritorio.'

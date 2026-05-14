@@ -54,6 +54,12 @@ body {
   scrollbar-width: none; /* Firefox — Chrome 121+; Safari not supported (covered above) */
 }
 
+/* Touch optimization: eliminates 300ms tap delay on mobile */
+.touch-manipulation {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
