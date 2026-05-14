@@ -36,8 +36,20 @@ export default function EpisodeList({ episodes, animeSlug, animeTitle }: Episode
   }, [fetchStatusMap]);
 
   // Called by EpisodeStatusBadge after a successful save.
-  // If previous episodes were bulk-updated, refetch the full map.
-  const handleStatusChange = (updatedPreviousCount: number) => {
+  // Apply optimistic update locally for bulk-marked episodes,
+  // then do a background refetch for consistency.
+  const handleStatusChange = (updatedPreviousCount: number, episodeNumber: number, newStatus: 'pendiente' | 'viendo' | 'visto') => {
+    if (newStatus === 'visto' && updatedPreviousCount > 0) {
+      // Optimistically mark all previous episodes as 'visto' in local state
+      setStatusMap(prev => {
+        const updated = { ...prev };
+        for (let i = 1; i <= episodeNumber; i++) {
+          updated[i] = 'visto';
+        }
+        return updated;
+      });
+    }
+    // Background refetch for full consistency (non-blocking)
     if (updatedPreviousCount > 0) {
       fetchStatusMap();
     }
@@ -81,7 +93,7 @@ export default function EpisodeList({ episodes, animeSlug, animeTitle }: Episode
                 episodeNumber={ep.number}
                 initialStatus={epStatus}
                 dropdownDirection={isLastFew ? 'up' : 'down'}
-                onStatusChange={handleStatusChange}
+                onStatusChange={(count) => handleStatusChange(count, ep.number, 'visto')}
               />
             </div>
           </div>

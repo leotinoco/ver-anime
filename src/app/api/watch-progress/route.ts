@@ -6,9 +6,8 @@ import {
   type EpisodeStatus,
   type IWatchProgress,
 } from "@/models/WatchProgress";
-import mongoose, { type AnyBulkWriteOperation } from "mongoose";
+import { type AnyBulkWriteOperation } from "mongoose";
 
-const MAX_RETRY_ATTEMPTS = 3;
 const SLOW_REQUEST_THRESHOLD_MS = 500;
 
 const getAuthUser = async (req: NextRequest) => {
@@ -100,199 +99,165 @@ export const POST = async (req: NextRequest) => {
   }
 
   const startedAt = Date.now();
-  let attempt = 0;
-  const session = await mongoose.startSession();
 
   try {
-    while (attempt < MAX_RETRY_ATTEMPTS) {
-      attempt += 1;
-      try {
-        const updatedPrevious: Array<{
-          episodeNumber: number;
-          from: EpisodeStatus;
-          to: EpisodeStatus;
-        }> = [];
+    const now = new Date();
+    const updatedPrevious: Array<{
+      episodeNumber: number;
+      from: EpisodeStatus;
+      to: EpisodeStatus;
+    }> = [];
 
-        await session.withTransaction(async () => {
-          const now = new Date();
-
-          await WatchProgress.findOneAndUpdate(
-            {
-              userId: payload.userId,
-              animeSlug: animeSlugStr,
-              episodeNumber: episodeNum,
-            },
-            {
-              $set: {
-                status: statusValue,
-                watchedAt: now,
-                seriesId: resolvedSeriesId,
-                seasonId: resolvedSeasonId,
-              },
-              $setOnInsert: {
-                userId: payload.userId,
-                animeSlug: animeSlugStr,
-                episodeNumber: episodeNum,
-              },
-            },
-            { upsert: true, new: true, session },
-          );
-
-          const shouldAutoMarkPrevious =
-            normalizedSource === "manual" && statusValue === "visto";
-          if (!shouldAutoMarkPrevious) return;
-
-          // Buscamos cualquier episodio anterior para validar series/season y saber su estado actual
-          const previous = await WatchProgress.find(
-            {
-              userId: payload.userId,
-              animeSlug: animeSlugStr,
-              episodeNumber: { $lt: episodeNum },
-            },
-            { episodeNumber: 1, status: 1, seriesId: 1, seasonId: 1, _id: 0 },
-            { session },
-          ).lean();
-
-          const existingMap = new Map<number, EpisodeStatus>();
-          for (const doc of previous as Array<{
-            seriesId?: unknown;
-            seasonId?: unknown;
-            episodeNumber: number;
-            status: EpisodeStatus;
-          }>) {
-            existingMap.set(doc.episodeNumber, doc.status);
-            const prevSeriesId =
-              typeof doc.seriesId === "string" ? doc.seriesId : null;
-            const prevSeasonId =
-              typeof doc.seasonId === "string" ? doc.seasonId : null;
-            if (prevSeriesId && prevSeriesId !== resolvedSeriesId) {
-              const err = new Error("Series mismatch") as Error & {
-                status?: number;
-              };
-              err.status = 409;
-              throw err;
-            }
-            if (prevSeasonId && prevSeasonId !== resolvedSeasonId) {
-              const err = new Error("Season mismatch") as Error & {
-                status?: number;
-              };
-              err.status = 409;
-              throw err;
-            }
-          }
-
-          const bulkOps: AnyBulkWriteOperation<IWatchProgress>[] = [];
-          for (let i = 1; i < episodeNum; i++) {
-            const currentStatus = existingMap.get(i);
-            if (currentStatus !== "visto") {
-              bulkOps.push({
-                updateOne: {
-                  filter: {
-                    userId: payload.userId,
-                    animeSlug: animeSlugStr,
-                    episodeNumber: i,
-                  },
-                  update: {
-                    $set: {
-                      status: "visto",
-                      watchedAt: now,
-                      seriesId: resolvedSeriesId,
-                      seasonId: resolvedSeasonId,
-                    },
-                    $setOnInsert: {
-                      userId: payload.userId,
-                      animeSlug: animeSlugStr,
-                      episodeNumber: i,
-                    },
-                  },
-                  upsert: true,
-                },
-              });
-              updatedPrevious.push({
-                episodeNumber: i,
-                from: currentStatus ?? "pendiente",
-                to: "visto",
-              });
-            }
-          }
-
-          if (bulkOps.length === 0) return;
-
-          await WatchProgress.bulkWrite(bulkOps, { session });
-        });
-
-        const elapsedMs = Date.now() - startedAt;
-        const logPayload = {
-          ts: new Date().toISOString(),
-          event: "watch_progress_update",
-          source: normalizedSource || "unknown",
-          userId: payload.userId,
-          animeSlug: animeSlugStr,
+    // 1. Upsert the target episode — atomic, no transaction needed
+    //    The unique compound index (userId, animeSlug, episodeNumber) guarantees idempotency.
+    await WatchProgress.updateOne(
+      {
+        userId: payload.userId,
+        animeSlug: animeSlugStr,
+        episodeNumber: episodeNum,
+      },
+      {
+        $set: {
+          status: statusValue,
+          watchedAt: now,
           seriesId: resolvedSeriesId,
           seasonId: resolvedSeasonId,
+        },
+        $setOnInsert: {
+          userId: payload.userId,
+          animeSlug: animeSlugStr,
           episodeNumber: episodeNum,
-          status: statusValue,
-          updatedPrevious,
-          elapsedMs,
-        };
-        console.info(JSON.stringify(logPayload));
+        },
+      },
+      { upsert: true },
+    );
 
-        if (elapsedMs > SLOW_REQUEST_THRESHOLD_MS) {
-          console.warn(
-            JSON.stringify({
-              ...logPayload,
-              event: "watch_progress_update_slow",
-            }),
-          );
-        }
+    // 2. Auto-mark previous episodes as "visto" (only for manual marks)
+    const shouldAutoMarkPrevious =
+      normalizedSource === "manual" && statusValue === "visto";
 
-        return NextResponse.json({
-          success: true,
-          updatedPreviousCount: updatedPrevious.length,
+    if (shouldAutoMarkPrevious && episodeNum > 1) {
+      // Find previous episodes that are NOT already "visto"
+      const previous = await WatchProgress.find(
+        {
+          userId: payload.userId,
+          animeSlug: animeSlugStr,
+          episodeNumber: { $lt: episodeNum },
+          status: { $ne: "visto" },
+        },
+        { episodeNumber: 1, status: 1, _id: 0 },
+      ).lean();
+
+      const existingNotVistoSet = new Set<number>();
+      for (const doc of previous) {
+        existingNotVistoSet.add(doc.episodeNumber);
+        updatedPrevious.push({
+          episodeNumber: doc.episodeNumber,
+          from: doc.status,
+          to: "visto",
         });
-      } catch (err: unknown) {
-        const e = err as {
-          hasErrorLabel?: (label: string) => boolean;
-          code?: unknown;
-          status?: unknown;
-          message?: unknown;
-        };
-        const hasTransientLabel =
-          typeof e?.hasErrorLabel === "function" &&
-          e.hasErrorLabel("TransientTransactionError");
-        const isWriteConflict = e?.code === 112;
-        const shouldRetry = hasTransientLabel || isWriteConflict;
+      }
 
-        if (shouldRetry && attempt < MAX_RETRY_ATTEMPTS) {
-          continue;
+      // Build bulk ops: upsert all episodes from 1 to episodeNum-1
+      const bulkOps: AnyBulkWriteOperation<IWatchProgress>[] = [];
+      for (let i = 1; i < episodeNum; i++) {
+        if (existingNotVistoSet.has(i)) {
+          // Existing doc that is not "visto" — update it
+          bulkOps.push({
+            updateOne: {
+              filter: {
+                userId: payload.userId,
+                animeSlug: animeSlugStr,
+                episodeNumber: i,
+              },
+              update: {
+                $set: {
+                  status: "visto",
+                  watchedAt: now,
+                  seriesId: resolvedSeriesId,
+                  seasonId: resolvedSeasonId,
+                },
+              },
+            },
+          });
+        } else if (!existingNotVistoSet.has(i)) {
+          // Might not exist at all — upsert only if missing
+          bulkOps.push({
+            updateOne: {
+              filter: {
+                userId: payload.userId,
+                animeSlug: animeSlugStr,
+                episodeNumber: i,
+              },
+              update: {
+                $setOnInsert: {
+                  userId: payload.userId,
+                  animeSlug: animeSlugStr,
+                  episodeNumber: i,
+                  status: "visto",
+                  watchedAt: now,
+                  seriesId: resolvedSeriesId,
+                  seasonId: resolvedSeasonId,
+                },
+              },
+              upsert: true,
+            },
+          });
         }
+      }
 
-        const statusCode = typeof e?.status === "number" ? e.status : 500;
-        console.error(
-          JSON.stringify({
-            ts: new Date().toISOString(),
-            event: "watch_progress_update_error",
-            userId: payload.userId,
-            animeSlug,
-            episodeNumber: episodeNum,
-            status,
-            source: normalizedSource || "unknown",
-            attempt,
-            error: typeof e?.message === "string" ? e.message : String(err),
-          }),
-        );
-        return NextResponse.json(
-          { error: "Failed to update watch progress" },
-          { status: statusCode },
-        );
+      if (bulkOps.length > 0) {
+        await WatchProgress.bulkWrite(bulkOps, { ordered: false });
       }
     }
-  } finally {
-    await session.endSession();
-  }
 
-  return NextResponse.json(
-    { error: "Failed to update watch progress" },
-    { status: 500 },
-  );
+    const elapsedMs = Date.now() - startedAt;
+    const logPayload = {
+      ts: new Date().toISOString(),
+      event: "watch_progress_update",
+      source: normalizedSource || "unknown",
+      userId: payload.userId,
+      animeSlug: animeSlugStr,
+      seriesId: resolvedSeriesId,
+      seasonId: resolvedSeasonId,
+      episodeNumber: episodeNum,
+      status: statusValue,
+      updatedPreviousCount: updatedPrevious.length,
+      elapsedMs,
+    };
+    console.info(JSON.stringify(logPayload));
+
+    if (elapsedMs > SLOW_REQUEST_THRESHOLD_MS) {
+      console.warn(
+        JSON.stringify({
+          ...logPayload,
+          event: "watch_progress_update_slow",
+        }),
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      updatedPreviousCount: updatedPrevious.length,
+    });
+  } catch (err: unknown) {
+    const e = err as { status?: unknown; message?: unknown };
+    const statusCode = typeof e?.status === "number" ? e.status : 500;
+    console.error(
+      JSON.stringify({
+        ts: new Date().toISOString(),
+        event: "watch_progress_update_error",
+        userId: payload.userId,
+        animeSlug,
+        episodeNumber: episodeNum,
+        status,
+        source: normalizedSource || "unknown",
+        error: typeof e?.message === "string" ? e.message : String(err),
+      }),
+    );
+    return NextResponse.json(
+      { error: "Failed to update watch progress" },
+      { status: statusCode },
+    );
+  }
 };
