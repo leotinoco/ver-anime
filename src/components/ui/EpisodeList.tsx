@@ -35,24 +35,31 @@ export default function EpisodeList({ episodes, animeSlug, animeTitle }: Episode
     fetchStatusMap();
   }, [fetchStatusMap]);
 
-  // Called by EpisodeStatusBadge after a successful save.
-  // Apply optimistic update locally for bulk-marked episodes,
-  // then do a background refetch for consistency.
-  const handleStatusChange = (updatedPreviousCount: number, episodeNumber: number, newStatus: 'pendiente' | 'viendo' | 'visto') => {
-    if (newStatus === 'visto' && updatedPreviousCount > 0) {
-      // Optimistically mark all previous episodes as 'visto' in local state
-      setStatusMap(prev => {
-        const updated = { ...prev };
+  // Called by EpisodeStatusBadge immediately when a user clicks a new status
+  const handleOptimisticUpdate = (episodeNumber: number, newStatus: 'pendiente' | 'viendo' | 'visto') => {
+    setStatusMap(prev => {
+      const updated = { ...prev };
+      if (newStatus === 'visto') {
+        // Optimistically mark this and all previous episodes as 'visto'
         for (let i = 1; i <= episodeNumber; i++) {
           updated[i] = 'visto';
         }
-        return updated;
-      });
-    }
-    // Background refetch for full consistency (non-blocking)
-    if (updatedPreviousCount > 0) {
-      fetchStatusMap();
-    }
+      } else {
+        // Just update this specific episode
+        updated[episodeNumber] = newStatus;
+      }
+      return updated;
+    });
+  };
+
+  // Called by EpisodeStatusBadge after the API call finishes.
+  // We refetch to ensure the local state is perfectly synced with the DB.
+  const handleApiSync = (updatedPreviousCount: number) => {
+    // If the API failed (updatedPreviousCount === 0 when we expected more, or just to be safe),
+    // or if it succeeded, we refetch to ensure consistency.
+    // To avoid too many fetches, we could only fetch if updatedPreviousCount > 0 or if there was an error,
+    // but a background refetch is generally safe and ensures we don't stay out of sync.
+    fetchStatusMap();
   };
 
   if (!episodes || episodes.length === 0) {
@@ -93,7 +100,8 @@ export default function EpisodeList({ episodes, animeSlug, animeTitle }: Episode
                 episodeNumber={ep.number}
                 initialStatus={epStatus}
                 dropdownDirection={isLastFew ? 'up' : 'down'}
-                onStatusChange={(count) => handleStatusChange(count, ep.number, 'visto')}
+                onOptimisticChange={(newStatus) => handleOptimisticUpdate(ep.number, newStatus)}
+                onStatusChange={handleApiSync}
               />
             </div>
           </div>

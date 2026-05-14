@@ -11,6 +11,7 @@ interface EpisodeStatusBadgeProps {
   initialStatus?: EpisodeStatus;
   compact?: boolean;
   dropdownDirection?: 'up' | 'down';
+  onOptimisticChange?: (newStatus: EpisodeStatus) => void;
   onStatusChange?: (updatedPreviousCount: number) => void;
 }
 
@@ -41,25 +42,27 @@ export default function EpisodeStatusBadge({
   initialStatus = 'pendiente',
   compact = false,
   dropdownDirection = 'down',
+  onOptimisticChange,
   onStatusChange,
 }: EpisodeStatusBadgeProps) {
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(false);
 
-  const [optimisticStatus, setOptimisticStatus] = useOptimistic<EpisodeStatus, EpisodeStatus>(
-    initialStatus,
-    (_, newStatus) => newStatus,
-  );
-
-  const config = STATUS_CONFIG[optimisticStatus];
+  // We use the prop as the single source of truth since the parent will update it optimistically
+  const currentStatus = initialStatus;
+  const config = STATUS_CONFIG[currentStatus];
 
   const updateStatus = async (newStatus: EpisodeStatus) => {
-    if (newStatus === optimisticStatus) { setOpen(false); return; }
+    if (newStatus === currentStatus) { setOpen(false); return; }
     setOpen(false);
     setSaving(true);
     setError(false);
-    setOptimisticStatus(newStatus); // Optimistic update
+    
+    // Notify parent immediately for instant UI update
+    if (onOptimisticChange) {
+      onOptimisticChange(newStatus);
+    }
     
     try {
       const res = await fetch('/api/watch-progress', {
@@ -70,9 +73,10 @@ export default function EpisodeStatusBadge({
       if (!res.ok) {
         setError(true);
         setTimeout(() => setError(false), 3000);
+        // We could tell the parent to rollback here, but a refetch will fix it eventually
+        if (onStatusChange) onStatusChange(0);
       } else {
         const data = await res.json();
-        // Notify parent if previous episodes were bulk-updated
         if (onStatusChange) {
           onStatusChange(data.updatedPreviousCount ?? 0);
         }
@@ -81,6 +85,7 @@ export default function EpisodeStatusBadge({
       console.error(e);
       setError(true);
       setTimeout(() => setError(false), 3000);
+      if (onStatusChange) onStatusChange(0);
     } finally {
       setSaving(false);
     }
@@ -129,7 +134,7 @@ export default function EpisodeStatusBadge({
               <button
                 key={s}
                 onClick={(e) => { e.stopPropagation(); updateStatus(s); }}
-                className={`w-full flex items-center gap-2 px-3 py-2 rounded text-xs font-semibold hover:bg-zinc-800 transition-colors ${optimisticStatus === s ? 'text-white' : 'text-gray-400'}`}
+                className={`w-full flex items-center gap-2 px-3 py-2 rounded text-xs font-semibold hover:bg-zinc-800 transition-colors ${currentStatus === s ? 'text-white' : 'text-gray-400'}`}
               >
                 <span className={`w-2 h-2 rounded-full ${sc.dot}`} />
                 {sc.label}
