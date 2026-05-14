@@ -142,12 +142,6 @@ export default function ChangelogPage() {
         'Diseño responsivo para móviles y escritorio.'
       ]
     }
-  ];meFLV.',
-        'Buscador global de animes funcional.',
-        'Sistema de favoritos local inicial.',
-        'Diseño responsivo para móviles y escritorio.'
-      ]
-    }
   ];
 
   return (
