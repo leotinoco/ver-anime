@@ -62,11 +62,6 @@ export default function EpisodeWatcher({
   const { trigger } = useSWRMutation("/api/watch-progress", updateProgressFetcher);
 
   useEffect(() => {
-    statusRef.current = initialStatus;
-    setCurrentStatus(initialStatus);
-  }, [initialStatus]);
-
-  useEffect(() => {
     const storageKey = makeStorageKey(animeSlug, episodeNumber);
 
     const persist = () => {

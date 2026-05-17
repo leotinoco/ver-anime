@@ -54,7 +54,7 @@ export default function EpisodeList({ episodes, animeSlug, animeTitle }: Episode
 
   // Called by EpisodeStatusBadge after the API call finishes.
   // We refetch to ensure the local state is perfectly synced with the DB.
-  const handleApiSync = (updatedPreviousCount: number) => {
+  const handleApiSync = (_updatedPreviousCount: number) => {
     // If the API failed (updatedPreviousCount === 0 when we expected more, or just to be safe),
     // or if it succeeded, we refetch to ensure consistency.
     // To avoid too many fetches, we could only fetch if updatedPreviousCount > 0 or if there was an error,

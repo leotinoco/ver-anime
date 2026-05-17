@@ -5,7 +5,6 @@ import { ChevronLeft, ChevronRight, Star, Calendar } from 'lucide-react';
 import { m } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 
 const recommendedAnimes = [
   {
@@ -172,7 +171,6 @@ export default function RecommendedCarousel() {
   const containerRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const dragStartRef = useRef<{ x: number; y: number } | null>(null);
-  const router = useRouter();
 
   // Extend table to allow for infinite looping
   const extendedAnimes = [
@@ -239,7 +237,7 @@ export default function RecommendedCarousel() {
   };
 
   // Navigate only if the pointer didn't move much (it was a tap, not a drag)
-  const handleCardClick = (e: React.MouseEvent, slug: string) => {
+  const handleCardClick = (e: React.MouseEvent, _slug: string) => {
     if (dragStartRef.current) {
       const dx = Math.abs(e.clientX - dragStartRef.current.x);
       const dy = Math.abs(e.clientY - dragStartRef.current.y);
