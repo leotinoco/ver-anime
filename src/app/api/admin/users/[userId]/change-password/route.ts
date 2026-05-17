@@ -1,11 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongoose';
 import { User } from '@/models/User';
-import { hashPassword, decrypt } from '@/lib/auth';
+import { hashPassword, verifyPassword, decrypt } from '@/lib/auth';
 
 export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ userId: string }> },
+) {
+  return handlePasswordChange(req, params);
+}
+
+async function handlePasswordChange(
+  req: NextRequest,
+  params: Promise<{ userId: string }>,
 ) {
   try {
     const sessionCookie = req.cookies.get('session');
@@ -59,8 +66,27 @@ export async function PATCH(
       );
     }
 
+    const isSamePassword = await verifyPassword(password, targetUser.passwordHash);
+    if (isSamePassword) {
+      return NextResponse.json(
+        { error: 'La nueva contraseña debe ser diferente a la actual' },
+        { status: 400 },
+      );
+    }
+
     const passwordHash = await hashPassword(password);
     await User.findByIdAndUpdate(userId, { passwordHash });
+
+    console.info(
+      JSON.stringify({
+        ts: new Date().toISOString(),
+        event: 'admin_password_change',
+        adminId: payload.userId,
+        adminUsername: payload.username,
+        targetUserId: userId,
+        targetUsername: targetUser.username,
+      }),
+    );
 
     return NextResponse.json({
       message: 'Contraseña actualizada correctamente',
