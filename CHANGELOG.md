@@ -1,5 +1,18 @@
 # Changelog de Anime Fan
 
+## [1.5.0] - 2026-05-17
+
+### Añadido
+
+- 🔒 **Cambio de Contraseña desde Panel Admin**: Los administradores pueden restablecer la contraseña de cualquier usuario desde `/admin` con un botón de candado en cada fila de la tabla.
+- 🛡️ **Validación de Contraseña Duplicada**: Se verifica que la nueva contraseña sea diferente a la actual usando `verifyPassword` contra el hash existente.
+- 📋 **Log de Auditoría Estructurado**: Cada cambio de contraseña queda registrado con adminId, adminUsername, targetUserId y timestamp en formato JSON.
+
+### Corregido
+
+- 🔐 **Prevención de Auto-Cambio**: Se bloquea que un admin use la ruta de admin para cambiar su propia contraseña (403 Forbidden).
+- 🧹 **Ruido en Logs de Producción**: Se eliminó el `console.log` de sesiones inválidas en `decrypt()` que generaba ruido innecesario y podía usarse para fingerprinting.
+
 ## [1.4.1] - 2026-05-17
 
 ### Corregido

@@ -3,6 +3,19 @@ import { Milestone, Rocket, ShieldCheck, Sparkles, Zap } from 'lucide-react';
 export default function ChangelogPage() {
   const updates = [
     {
+      version: 'v1.5.0',
+      date: '17 de Mayo, 2026',
+      title: 'Cambio de Contraseña desde Panel Admin y Hardening de Seguridad',
+      icon: <ShieldCheck className="text-green-500" />,
+      changes: [
+        '🔒 Cambio de Contraseña: Los admins pueden restablecer contraseñas de usuarios desde /admin con botón de candado en la tabla.',
+        '🛡️ Validación Anti-Duplicados: Se verifica que la nueva contraseña sea diferente a la actual antes de guardar.',
+        '🚫 Bloqueo de Auto-Cambio: Un admin no puede usar esta ruta para cambiar su propia contraseña.',
+        '📋 Log de Auditoría: Cada cambio queda registrado con admin, target y timestamp en formato JSON.',
+        '🧹 Logs Limpios: Se eliminó el console.log de sesiones inválidas que generaba ruido en producción.'
+      ]
+    },
+    {
       version: 'v1.4.1',
       date: '17 de Mayo, 2026',
       title: 'Área Clicable Completa en Miniaturas',
