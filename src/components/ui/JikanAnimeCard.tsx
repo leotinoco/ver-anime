@@ -31,6 +31,7 @@ export default function JikanAnimeCard({ slug, title, cover }: JikanAnimeCardPro
         <m.div 
           className="w-full h-full relative"
           whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.98 }}
           transition={{ duration: 0.2 }}
         >
           <Image 

@@ -325,7 +325,7 @@ export default function RecommendedCarousel() {
                 />
                 
                 {/* Overlay Gradient */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent opacity-90 group-hover/card:opacity-100 transition-opacity"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent opacity-90 group-hover/card:opacity-100 transition-opacity pointer-events-none"></div>
                 
                 {/* Top Badge */}
                 <div className="absolute top-5 left-5 z-10">
@@ -336,7 +336,7 @@ export default function RecommendedCarousel() {
                 </div>
 
                 {/* Content */}
-                <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8 z-20 translate-y-0 md:translate-y-6 group-hover/card:translate-y-0 transition-transform duration-500">
+                <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8 z-20 translate-y-0 md:translate-y-6 group-hover/card:translate-y-0 transition-transform duration-500 pointer-events-none">
                   <div className="flex items-center gap-2 md:gap-3 mb-2 md:mb-3 text-zinc-300 text-[10px] md:text-xs font-semibold uppercase tracking-widest bg-white/5 w-fit px-2 py-1 md:px-3 rounded-full border border-white/10">
                     <span className="flex items-center gap-1.5">
                       <Calendar className="size-3" />

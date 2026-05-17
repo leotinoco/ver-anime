@@ -3,6 +3,19 @@ import { Milestone, Rocket, ShieldCheck, Sparkles, Zap } from 'lucide-react';
 export default function ChangelogPage() {
   const updates = [
     {
+      version: 'v1.4.1',
+      date: '17 de Mayo, 2026',
+      title: 'Área Clicable Completa en Miniaturas',
+      icon: <Sparkles className="text-yellow-400" />,
+      changes: [
+        '📱 Miniaturas 100% clicables: Toda el área de las miniaturas ahora responde al toque en móvil, sin zonas muertas ni conflictos de capas.',
+        '🏷️ Badge de Rating: En "Mejor Calificados", el badge de rating ya no bloquea toques en la esquina superior derecha de las tarjetas.',
+        '🎢 Carrusel Hero: Los overlays de gradiente y contenido ahora permiten toques correctos sin interferir con el arrastre.',
+        '🎮 Drag-and-Drop en Favoritos: Se aumentó el umbral de activación de 8px a 12px para evitar que toques rápidos se capturen como arrastres.',
+        '✨ Feedback Táctil: Las tarjetas ahora muestran un efecto de escala al tocarlas, proporcionando feedback visual inmediato.'
+      ]
+    },
+    {
       version: 'v1.4.0',
       date: '17 de Mayo, 2026',
       title: 'Feedback Visual Instantáneo y Estado Reactivo',

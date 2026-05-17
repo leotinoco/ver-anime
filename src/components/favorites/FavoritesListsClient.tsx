@@ -45,7 +45,7 @@ export default function FavoritesListsClient({ initialLists }: FavoritesListsCli
   const sensors = useSensors(
     useSensor(PointerSensor, {
         activationConstraint: {
-            distance: 8,
+            distance: 12,
         },
     }),
     useSensor(KeyboardSensor, {

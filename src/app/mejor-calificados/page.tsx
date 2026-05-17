@@ -57,7 +57,7 @@ export default async function MejorCalificadosPage() {
                 </div>
                 
                 {/* Rating visualization badge inside card */}
-                <div className="absolute top-2 right-2 bg-black/80 backdrop-blur px-2 py-1 rounded text-xs font-bold text-yellow-500 z-20 flex items-center gap-1 border border-yellow-500/50">
+                <div className="absolute top-2 right-2 bg-black/80 backdrop-blur px-2 py-1 rounded text-xs font-bold text-yellow-500 z-20 flex items-center gap-1 border border-yellow-500/50 pointer-events-none">
                   <Star className="w-3 h-3 fill-yellow-500" /> {anime.rating.toFixed(1)}
                 </div>
 

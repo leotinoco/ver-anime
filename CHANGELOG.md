@@ -1,5 +1,15 @@
 # Changelog de Anime Fan
 
+## [1.4.1] - 2026-05-17
+
+### Corregido
+
+- 📱 **Área Clicable en Miniaturas (Home, Búsqueda, Categorías, Top)**: Se resolvió el problema donde las miniaturas de animes solo respondían al toque en una zona reducida. Ahora toda el área de la imagen es 100% clicable en todas las páginas.
+- 🏷️ **Badge de Rating Bloqueando Toques**: En la página "Mejor Calificados", el badge de rating en la esquina superior derecha de cada tarjeta bloqueaba los toques en esa zona. Se añadió `pointer-events-none` para permitir que el toque pase a la tarjeta.
+- 🎢 **Overlays del Carrusel Hero Interceptando Toques**: Los overlays de gradiente y contenido en el carrusel de recomendaciones no tenían `pointer-events-none`, lo que causaba conflictos con el sistema de arrastre de framer-motion.
+- 🎮 **Sensor de Arrastre en Favoritos Demasiado Sensible**: El umbral de activación del drag-and-drop en la página de favoritos era de solo 8px, capturando toques rápidos como intentos de arrastre. Se aumentó a 12px para mejor distinción entre tap y drag.
+- ✨ **Feedback Táctil en Tarjetas**: Se añadió `whileTap={{ scale: 0.98 }}` a las tarjetas para proporcionar feedback visual inmediato al tocar en móvil.
+
 ## [1.4.0] - 2026-05-17
 
 ### Añadido
