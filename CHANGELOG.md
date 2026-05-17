@@ -12,6 +12,7 @@
 
 - 🔐 **Prevención de Auto-Cambio**: Se bloquea que un admin use la ruta de admin para cambiar su propia contraseña (403 Forbidden).
 - 🧹 **Ruido en Logs de Producción**: Se eliminó el `console.log` de sesiones inválidas en `decrypt()` que generaba ruido innecesario y podía usarse para fingerprinting.
+- 📱 **Miniaturas en Favoritos sin Área Clicable Completa**: `DraggableAnimeCard` en la página de favoritos no tenía toda la imagen clicable ni título visible en móvil. Se reestructuró para envolver la tarjeta completa en un `<Link>` con `touch-manipulation` y overlay de gradiente con título siempre visible, igual que `AnimeCard` del home.
 
 ## [1.4.1] - 2026-05-17
 

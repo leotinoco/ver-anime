@@ -12,7 +12,8 @@ export default function ChangelogPage() {
         '🛡️ Validación Anti-Duplicados: Se verifica que la nueva contraseña sea diferente a la actual antes de guardar.',
         '🚫 Bloqueo de Auto-Cambio: Un admin no puede usar esta ruta para cambiar su propia contraseña.',
         '📋 Log de Auditoría: Cada cambio queda registrado con admin, target y timestamp en formato JSON.',
-        '🧹 Logs Limpios: Se eliminó el console.log de sesiones inválidas que generaba ruido en producción.'
+        '🧹 Logs Limpios: Se eliminó el console.log de sesiones inválidas que generaba ruido en producción.',
+        '📱 Miniaturas en Favoritos: DraggableAnimeCard ahora tiene toda la imagen clicable y título visible en móvil, igual que las tarjetas del home.'
       ]
     },
     {
