@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import useSWRMutation from "swr/mutation";
 import EpisodeStatusBadge from "./EpisodeStatusBadge";
 import {
@@ -53,13 +53,17 @@ export default function EpisodeWatcher({
   const lastTickAtMsRef = useRef<number | null>(null);
   const lastPersistAtMsRef = useRef<number | null>(null);
   const pendingStatusRef = useRef<EpisodeStatus | null>(null);
-  
+  const onStatusChangeRef = useRef<((count: number) => void) | null>(null);
+
+  const [currentStatus, setCurrentStatus] = useState<EpisodeStatus>(initialStatus);
+
   const isOnline = useSyncExternalStore(subscribeOnline, getSnapshotOnline, getServerSnapshotOnline);
-  
-  const { trigger, isMutating } = useSWRMutation("/api/watch-progress", updateProgressFetcher);
+
+  const { trigger } = useSWRMutation("/api/watch-progress", updateProgressFetcher);
 
   useEffect(() => {
     statusRef.current = initialStatus;
+    setCurrentStatus(initialStatus);
   }, [initialStatus]);
 
   useEffect(() => {
@@ -100,10 +104,7 @@ export default function EpisodeWatcher({
       };
       pendingStatusRef.current = null;
       persist();
-      return;
-    }
-
-    if (
+    } else if (
       initialStatus === "viendo" &&
       snapshotRef.current.status === "pendiente"
     ) {
@@ -125,7 +126,6 @@ export default function EpisodeWatcher({
     };
 
     const sendPending = async () => {
-      if (isMutating) return;
       const pending = pendingStatusRef.current;
       if (!pending) return;
       if (pending !== "viendo" && pending !== "visto") return;
@@ -148,6 +148,7 @@ export default function EpisodeWatcher({
         });
         statusRef.current = pending;
         pendingStatusRef.current = null;
+        setCurrentStatus(pending);
         persist();
       } catch {
       }
@@ -187,7 +188,16 @@ export default function EpisodeWatcher({
       window.removeEventListener("beforeunload", onBeforeUnload);
       persist();
     };
-  }, [animeSlug, episodeNumber, initialStatus, trigger, isMutating]);
+  }, [animeSlug, episodeNumber, initialStatus, trigger]);
+
+  const onOptimisticChange = (newStatus: EpisodeStatus) => {
+    setCurrentStatus(newStatus);
+    statusRef.current = newStatus;
+  };
+
+  const onStatusChange = (updatedPreviousCount: number) => {
+    onStatusChangeRef.current?.(updatedPreviousCount);
+  };
 
   return (
     <div className="mt-6 flex items-center gap-3 bg-zinc-900 border border-zinc-800 rounded-xl p-4 max-w-5xl mx-auto">
@@ -202,7 +212,9 @@ export default function EpisodeWatcher({
       <EpisodeStatusBadge
         animeSlug={animeSlug}
         episodeNumber={episodeNumber}
-        initialStatus={initialStatus}
+        initialStatus={currentStatus}
+        onOptimisticChange={onOptimisticChange}
+        onStatusChange={onStatusChange}
       />
     </div>
   );

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useOptimistic } from 'react';
+import { useState } from 'react';
 import { CheckCircle2, Clock, Circle, ChevronDown } from 'lucide-react';
 
 type EpisodeStatus = 'pendiente' | 'viendo' | 'visto';

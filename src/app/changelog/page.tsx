@@ -3,6 +3,19 @@ import { Milestone, Rocket, ShieldCheck, Sparkles, Zap } from 'lucide-react';
 export default function ChangelogPage() {
   const updates = [
     {
+      version: 'v1.4.0',
+      date: '17 de Mayo, 2026',
+      title: 'Feedback Visual Instantáneo y Estado Reactivo',
+      icon: <Zap className="text-blue-400" />,
+      changes: [
+        '⚡ Actualización Optimista: Al marcar un episodio como "Visto", el badge cambia al instante sin esperar al servidor, con rollback automático si hay error.',
+        '🧠 Estado Reactivo: El reproductor ahora usa React state en vez de refs, reflejando cambios de estado sin recargar la página.',
+        '🐛 Corrección Crítica: El badge de progreso en la página del reproductor ya no requiere refresco manual para verse actualizado.',
+        '🔄 Early Fix: Se eliminó un return prematuro que impedía la correcta limpieza de event listeners de persistencia.',
+        '🧹 Mantenimiento: Eliminación de código muerto (useOptimistic sin uso) en EpisodeStatusBadge.'
+      ]
+    },
+    {
       version: 'v1.3.9',
       date: '14 de Mayo, 2026',
       title: 'Mejoras en Interacción Móvil',

@@ -1,5 +1,18 @@
 # Changelog de Anime Fan
 
+## [1.4.0] - 2026-05-17
+
+### Añadido
+
+- ⚡ **Actualización Optimista de UI en Progreso de Episodios**: Al marcar un episodio como "Visto", el badge se actualiza instantáneamente (<16ms) sin esperar la respuesta del servidor, con rollback automático en caso de error.
+- 🧠 **Estado Reactivo en EpisodeWatcher**: Se reemplazó el `useRef` por `useState` para que el badge del reproductor se re-renderice automáticamente al cambiar el estado (antes requería recarga manual).
+
+### Corregido
+
+- 🐛 **Feedback Visual Nulo en Reproductor**: El componente `EpisodeWatcher` no reflejaba cambios de estado hasta refrescar la página porque usaba `useRef` (sin re-render) en lugar de estado React. Ahora los cambios manuales y automáticos se reflejan al instante.
+- 🧹 **Código Muerto Eliminado**: Se eliminó el import no utilizado de `useOptimistic` en `EpisodeStatusBadge.tsx`.
+- 🔄 **Early Return Removido**: Se eliminó el `return` prematuro en el effect cuando `initialStatus === "visto"` que impedía registrar event listeners de cleanup.
+
 ## [1.3.9] - 2026-05-14
 
 ### Corregido
