@@ -1,15 +1,25 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Users, Shield, UserPlus, Trash2, X, CheckCircle, AlertTriangle } from 'lucide-react';
+import { Users, Shield, UserPlus, Trash2, X, CheckCircle, AlertTriangle, Lock } from 'lucide-react';
+import UserPasswordModal from '@/components/admin/UserPasswordModal';
 
+interface AdminUser {
+  _id: string;
+  username: string;
+  email: string;
+  role: 'admin' | 'user';
+  createdAt: string;
+}
 
 export default function AdminPage() {
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<{type: 'success' | 'error', msg: string} | null>(null);
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<{ userId: string; email: string } | null>(null);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -25,8 +35,8 @@ export default function AdminPage() {
       // For now let's assume we create a simple GET endpoint or just fetch.
       const data = await res.json();
       if (data.users) setUsers(data.users);
-    } catch (err) {
-      console.error(err);
+    } catch {
+      console.error('Error fetching users');
     } finally {
       setLoading(false);
     }
@@ -56,8 +66,8 @@ export default function AdminPage() {
       setFormData({ username: '', email: '', password: '', role: 'user' });
       fetchUsers();
       setTimeout(() => setIsModalOpen(false), 2000);
-    } catch (err: any) {
-      setFeedback({ type: 'error', msg: err.message });
+    } catch (err: unknown) {
+      setFeedback({ type: 'error', msg: err instanceof Error ? err.message : 'Error desconocido' });
     } finally {
       setIsSubmitting(false);
     }
@@ -120,9 +130,18 @@ export default function AdminPage() {
                     </td>
                     <td className="px-6 py-4 text-gray-500">{new Date(user.createdAt).toLocaleDateString()}</td>
                     <td className="px-6 py-4 text-right">
-                      <button aria-label="Eliminar usuario" className="text-gray-500 hover:text-red-500 p-2 transition-colors">
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      <div className="flex items-center justify-end gap-1">
+                        <button
+                          aria-label="Cambiar contraseña"
+                          onClick={() => { setSelectedUser({ userId: user._id, email: user.email }); setIsPasswordModalOpen(true); }}
+                          className="text-gray-500 hover:text-yellow-400 p-2 transition-colors"
+                        >
+                          <Lock className="w-4 h-4" />
+                        </button>
+                        <button aria-label="Eliminar usuario" className="text-gray-500 hover:text-red-500 p-2 transition-colors">
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -211,6 +230,20 @@ export default function AdminPage() {
               </form>
             </div>
           </div>
+        )}
+
+        {/* Change Password Modal */}
+        {isPasswordModalOpen && selectedUser && (
+          <UserPasswordModal
+            userId={selectedUser.userId}
+            email={selectedUser.email}
+            onClose={() => { setIsPasswordModalOpen(false); setSelectedUser(null); }}
+            onSuccess={() => {
+              setIsPasswordModalOpen(false);
+              setSelectedUser(null);
+              fetchUsers();
+            }}
+          />
         )}
       </div>
     </div>
